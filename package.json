@@ -51,6 +51,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "antd": "^4.6.3",
     "bootswatch": "^4.5.2",
     "direct-styled": "^1.0.1",
     "react": "^16.13.1",
@@ -58,9 +59,9 @@
     "react-dom": "^16.13.1",
     "react-hook-form": "^6.4.0",
     "react-hot-loader": "^4.12.21",
-    "react-sound": "^1.2.0",
-    "react-use-gesture": "^7.0.15",
     "react-router-bootstrap": "^0.25.0",
-    "react-router-dom": "^5.1.2"
+    "react-router-dom": "^5.1.2",
+    "react-sound": "^1.2.0",
+    "react-use-gesture": "^7.0.15"
   }
 }
