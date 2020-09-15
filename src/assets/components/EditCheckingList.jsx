@@ -58,13 +58,11 @@ const { TextArea } = Input;
 export class EditCheckingList extends React.Component {
     state = {
       gData: [],
-      valueEdit: '',
+      value: '',
       valueTaskTitle: '',
       valueAuthor: '',
-      valueTaskName: '',
-
       key: '',
-      doubleClickedKey: '',
+      field: '',
     };
 
     componentDidMount() {
@@ -91,17 +89,17 @@ export class EditCheckingList extends React.Component {
       return gData;
     }
 
-    editItem = (key, value) => {
+    editItem = (key, field, value) => {
       this.state.gData.forEach((item, number) => {
         if (item.key === key) {
           const data = this.state.gData;
-          data[number].title = value;
+          data[number][field] = value;
           this.setState({ gData: data });
         }
         item.children.forEach((it, num) => {
           if (it.key === key) {
             const data = this.state.gData;
-            data[number].children[num].title = value;
+            data[number].children[num][field] = value;
             this.setState({ gData: data });
           }
         });
@@ -184,28 +182,74 @@ export class EditCheckingList extends React.Component {
 
     render() {
       console.log(this.state.gData);
-      const { gData, valueEdit, key } = this.state;
+      const {
+        gData, key, field, value, valueTaskTitle, valueAuthor,
+      } = this.state;
       const view = gData.map((item, index) => (
         <>
           <h4
             key={item.key}
             onClick={() => {
-              this.setState({ valueEdit: item.title });
-              this.setState({ key: item.key });
+              this.setState({
+                value: item.title,
+                key: item.key,
+                field: 'title',
+              });
             }}
           >
             {`${index + 1} ${item.title}`}
           </h4>
           {item.children.map((it, ind) => (
-            <p
-              key={it.key}
-              onClick={() => {
-                this.setState({ valueEdit: it.title });
-                this.setState({ key: it.key });
-              }}
-            >
-              {`   ${ind + 1} ${it.title}`}
-            </p>
+            <>
+              <p
+                key={it.key}
+                onClick={() => {
+                  this.setState({
+                    value: it.title,
+                    key: it.key,
+                    field: 'title',
+                  });
+                }}
+              >
+                {`   ${ind + 1} ${it.title}`}
+              </p>
+              <span
+                key={it.key + 1}
+                onClick={() => {
+                  this.setState({
+                    value: it.description,
+                    key: it.key,
+                    field: 'description',
+                  });
+                }}
+              >
+                {` ( ${it.description} )`}
+              </span>
+              <span
+                key={it.key + 2}
+                onClick={() => {
+                  this.setState({
+                    value: it.minScore.toString(),
+                    key: it.key,
+                    field: 'minScore',
+                  });
+                }}
+              >
+                {`минимальная оценка: ${it.minScore}`}
+              </span>
+              <span
+                key={it.key + 3}
+                onClick={() => {
+                  this.setState({
+                    value: it.maxScore.toString(),
+                    key: it.key,
+                    field: 'maxScore',
+                  });
+                }}
+              >
+                {`максимальная оценка: ${it.maxScore}`}
+              </span>
+            </>
           ))}
         </>
       ));
@@ -221,28 +265,28 @@ export class EditCheckingList extends React.Component {
             onDrop={this.onDrop}
             treeData={gData}
           />
-          {key && (
           <TextArea
             className="vvv"
             placeholder="Input"
             autoSize
-            value={valueEdit}
+            value={value}
             onChange={(e) => {
-              this.setState({ valueEdit: e.target.value });
+              this.setState({ value: e.target.value });
             }}
           />
-          )}
-          {key && (
           <Button
+            disabled={value.length === 0}
             onClick={() => {
-              this.editItem(key, valueEdit);
-              this.setState({ valueEdit: '' });
-              this.setState({ key: '' });
+              this.editItem(key, field, value);
+              this.setState({
+                value: '',
+                key: '',
+                field: '',
+              });
             }}
           >
             сохранить изменения
           </Button>
-          )}
           <div className="view">
             {view}
           </div>
