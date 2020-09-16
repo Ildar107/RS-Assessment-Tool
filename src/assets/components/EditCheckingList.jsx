@@ -106,6 +106,23 @@ export class EditCheckingList extends React.Component {
       });
     }
 
+    deleteItem = (key) => {
+      this.state.gData.forEach((item, number) => {
+        if (item.key === key) {
+          const data = this.state.gData;
+          data.splice(number, 1);
+          this.setState({ gData: data });
+        }
+        item.children.forEach((it, num) => {
+          if (it.key === key) {
+            const data = this.state.gData;
+            data[number].children.splice(num, 1);
+            this.setState({ gData: data });
+          }
+        });
+      });
+    }
+
     onDrop = (info) => {
       console.log(info);
       const dropKey = info.node.props.eventKey;
@@ -267,7 +284,7 @@ export class EditCheckingList extends React.Component {
           />
           <TextArea
             className="vvv"
-            placeholder="Input"
+            placeholder="Edit"
             autoSize
             value={value}
             onChange={(e) => {
@@ -286,6 +303,19 @@ export class EditCheckingList extends React.Component {
             }}
           >
             сохранить изменения
+          </Button>
+          <Button
+            disabled={value.length === 0 || field !== 'title'}
+            onClick={() => {
+              this.deleteItem(key);
+              this.setState({
+                value: '',
+                key: '',
+                field: '',
+              });
+            }}
+          >
+            удалить
           </Button>
           <div className="view">
             {view}
