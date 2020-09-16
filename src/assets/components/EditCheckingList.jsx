@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Input, Tree, Button, Row, Col, Menu, Dropdown,
+  Input, Tree, Button, Row, Col, Radio, Menu, Dropdown,
 } from 'antd';
-// import {DownOutlined} from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { data } from './Data';
 
 const { TextArea } = Input;
@@ -57,17 +57,50 @@ const { TextArea } = Input;
 
 export class EditCheckingList extends React.Component {
     state = {
+      numOfTask: '',
       gData: [],
-      value: '',
+      valueCreateCategory: '',
+      valueCreateItem: '',
       valueTaskTitle: '',
       valueAuthor: '',
+      valueState: '',
+      value: '',
       key: '',
       field: '',
     };
 
-    componentDidMount() {
+    editTask = (task, number) => {
       this.setState({
-        gData: this.createGData(data),
+        gData: this.createGData(task),
+        valueAuthor: task.author,
+        valueTaskTitle: task.title,
+        valueState: task.state,
+        numOfTask: number,
+        valueCreateCategory: '',
+        valueCreateItem: '',
+        value: '',
+        key: '',
+        field: '',
+      });
+    }
+
+    newTask = () => {
+      this.setState({
+        gData: [{
+          title: 'Example Category',
+          key: 'new',
+          enableChildren: true,
+          children: [],
+        }],
+        valueAuthor: '',
+        valueTaskTitle: '',
+        valueState: 'DRAFT',
+        numOfTask: 'new',
+        valueCreateCategory: '',
+        valueCreateItem: '',
+        value: '',
+        key: '',
+        field: '',
       });
     }
 
@@ -87,6 +120,32 @@ export class EditCheckingList extends React.Component {
           })),
       }));
       return gData;
+    }
+
+    createOutData = (data) => {
+      const items = [];
+      data.forEach((item, number) => {
+        item.children.forEach((it, num) => {
+          items.push({
+            id: `${it.title}-p${number}${num}`,
+            title: it.title,
+            description: it.description,
+            minScore: +it.minScore,
+            maxScore: +it.maxScore,
+            category: item.title,
+          });
+        });
+      });
+
+      return {
+        id: `${this.state.valueTaskTitle}-v1`,
+        title: this.state.valueTaskTitle,
+        author: this.state.valueAuthor,
+        state: this.state.valueState,
+        categoriesOrder: data.map((item) => item.title),
+        items,
+
+      };
     }
 
     editItem = (key, field, value) => {
@@ -120,6 +179,27 @@ export class EditCheckingList extends React.Component {
             this.setState({ gData: data });
           }
         });
+      });
+    }
+
+    createCategory = (value) => {
+      this.state.gData.push({
+        title: value,
+        key: value + this.state.gData.length,
+        enableChildren: true,
+        children: [],
+      });
+    }
+
+    createItem = (value) => {
+      const [title, description, minScore, maxScore] = value.split('//');
+      this.state.gData[this.state.gData.length - 1].children.push({
+        title,
+        key: title + this.state.gData[this.state.gData.length - 1].children.length,
+        enableChildren: false,
+        description,
+        minScore,
+        maxScore,
       });
     }
 
@@ -200,8 +280,28 @@ export class EditCheckingList extends React.Component {
     render() {
       console.log(this.state.gData);
       const {
-        gData, key, field, value, valueTaskTitle, valueAuthor,
+        gData, key, field, value, valueCreateItem, valueCreateCategory, valueTaskTitle, valueAuthor, valueState,
       } = this.state;
+
+      const menu = (
+        <Menu>
+          {
+                    data.map((item, number) => (
+                      <Menu.Item>
+                        <span onClick={() => this.editTask(item, number)}>
+                          {item.title}
+                        </span>
+                      </Menu.Item>
+                    ))
+                }
+          <Menu.Item danger>
+            <span onClick={() => this.newTask()}>Создать новый таск</span>
+          </Menu.Item>
+        </Menu>
+      );
+
+      const options = ['DRAFT', 'PUBLISHED', 'ARCHIVED'];
+
       const view = gData.map((item, index) => (
         <>
           <h4
@@ -272,54 +372,141 @@ export class EditCheckingList extends React.Component {
       ));
       return (
         <>
-          <Row>
-            <Col span={24} />
-          </Row>
-          <Tree
-            className="draggable-tree"
-            draggable
-                    // blockNode
-            onDrop={this.onDrop}
-            treeData={gData}
-          />
-          <TextArea
-            className="vvv"
-            placeholder="Edit"
-            autoSize
-            value={value}
-            onChange={(e) => {
-              this.setState({ value: e.target.value });
-            }}
-          />
-          <Button
-            disabled={value.length === 0}
-            onClick={() => {
-              this.editItem(key, field, value);
-              this.setState({
-                value: '',
-                key: '',
-                field: '',
-              });
-            }}
-          >
-            сохранить изменения
-          </Button>
-          <Button
-            disabled={value.length === 0 || field !== 'title'}
-            onClick={() => {
-              this.deleteItem(key);
-              this.setState({
-                value: '',
-                key: '',
-                field: '',
-              });
-            }}
-          >
-            удалить
-          </Button>
-          <div className="view">
-            {view}
-          </div>
+          <Dropdown overlay={menu}>
+            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+              Выбор таска
+              {' '}
+              <DownOutlined />
+            </a>
+          </Dropdown>
+          {gData.length !== 0
+                && (
+                <>
+                  <Button
+                    onClick={() => {
+                      console.log('>>>', this.createOutData(gData));
+                    }}
+                  >
+                    out data
+                  </Button>
+                  <Radio.Group
+                    options={options}
+                    onChange={(e) => this.setState({ valueState: e.target.value })}
+                    value={valueState}
+                  />
+                  <TextArea
+                    className="vvv"
+                    placeholder="Название таска"
+                    autoSize
+                    value={valueTaskTitle}
+                    onChange={(e) => {
+                      this.setState({ valueTaskTitle: e.target.value });
+                    }}
+                  />
+                  <TextArea
+                    className="vvv"
+                    placeholder="Автор"
+                    autoSize
+                    value={valueAuthor}
+                    onChange={(e) => {
+                      this.setState({ valueAuthor: e.target.value });
+                    }}
+                  />
+                  <Tree
+                    className="draggable-tree"
+                    draggable
+                            // blockNode
+                    onDrop={this.onDrop}
+                    treeData={gData}
+                  />
+                  <TextArea
+                    className="vvv"
+                    placeholder="Редактирование"
+                    autoSize
+                    value={value}
+                    onChange={(e) => {
+                      this.setState({ value: e.target.value });
+                    }}
+                  />
+                  <Button
+                    disabled={value.length === 0}
+                    onClick={() => {
+                      this.editItem(key, field, value);
+                      this.setState({
+                        value: '',
+                        key: '',
+                        field: '',
+                      });
+                    }}
+                  >
+                    сохранить изменения
+                  </Button>
+                  <Button
+                    disabled={value.length === 0 || field !== 'title'}
+                    onClick={() => {
+                      this.deleteItem(key);
+                      this.setState({
+                        value: '',
+                        key: '',
+                        field: '',
+                      });
+                    }}
+                  >
+                    удалить
+                  </Button>
+                  <TextArea
+                    className="vvv"
+                    placeholder="Создать категорию"
+                    autoSize
+                    value={valueCreateCategory}
+                    onChange={(e) => {
+                      this.setState({ valueCreateCategory: e.target.value });
+                    }}
+                  />
+                  <Button
+                    disabled={valueCreateCategory.length === 0}
+                    onClick={() => {
+                      this.createCategory(valueCreateCategory);
+                      this.setState({
+                        valueCreateCategory: '',
+                      });
+                    }}
+                  >
+                    Создать новую категорию
+                  </Button>
+                  <TextArea
+                    className="vvv"
+                    placeholder="Создать пункт в категории (Название//Описание//Минимальная оценка//Максимальная оценка)"
+                    autoSize
+                    value={valueCreateItem}
+                    onChange={(e) => {
+                      this.setState({ valueCreateItem: e.target.value });
+                    }}
+                  />
+                  <Button
+                    disabled={valueCreateItem.split('//').length !== 4 || gData.length === 0}
+                    onClick={() => {
+                      this.createItem(valueCreateItem);
+                      this.setState({
+                        valueCreateItem: '',
+                      });
+                    }}
+                  >
+                    Создать новый пункт
+                  </Button>
+                  <div className="view">
+                    <h3>
+                      Название таска:
+                      {` ${valueTaskTitle}`}
+                    </h3>
+                    <h3>
+                      Автор:
+                      {` ${valueAuthor}`}
+                    </h3>
+                    {view}
+                  </div>
+                </>
+                )}
         </>
       );
     }
