@@ -102,12 +102,12 @@ export class EditCheckingList extends React.Component {
     }
 
     createTaskFromMarkdown=(markdown) => {
-      const arrCategories = markdown.match(/.*\*\*.+\*\*:/gm).map((item) => item.split('**')[1]);
-      const arrItems = markdown.split(/.*\*\*.+\*\*:/);
+      const arrCategories = markdown.match(/\*\s+\*\*.+\*\*/gm).map((item) => item.split('**')[1]);
+      const arrItems = markdown.split(/\*\s+\*\*.+\*\*/);
       arrItems.splice(0, 1);
       const arrItemsSeparate = arrItems.map((item) => item.split('*'));
       arrItemsSeparate.forEach((item) => item.splice(0, 1));
-      arrItemsSeparate.forEach((item) => item.map((it) => it.replace(/(^\W*)|(\W*$)/g, '')));
+      const arrClean = arrItemsSeparate.map((item) => item.map((it) => it.replace(/(^[\s*\n:]*)|([\s*\n:]*$)/g, '')));
 
       return {
         id: `${this.state.valueTaskTitle}-v1`,
@@ -115,7 +115,7 @@ export class EditCheckingList extends React.Component {
         author: this.state.valueAuthor,
         state: this.state.valueState,
         categoriesOrder: arrCategories,
-        items: arrItemsSeparate,
+        items: arrClean,
       };
     }
 
