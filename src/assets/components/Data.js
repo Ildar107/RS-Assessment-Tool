@@ -12,7 +12,7 @@ export const data = [
         maxScore: 20,
         category: 'Basic Scope',
         title: 'Basic things',
-        description: 'You need to make things right, not wrong',
+        // description: 'You need to make things right, not wrong',
       },
       {
         id: 'extra_p1',
@@ -20,7 +20,7 @@ export const data = [
         maxScore: 30,
         category: 'Extra Scope',
         title: 'More awesome things',
-        description: 'Be creative and make up some more awesome things',
+        // description: 'Be creative and make up some more awesome things',
       },
       {
         id: 'fines_p1',
@@ -28,7 +28,7 @@ export const data = [
         maxScore: 0,
         category: 'Fines',
         title: 'App crashes',
-        description: 'App causes BSoD!',
+        // description: 'App causes BSoD!',
       },
     ],
   },
@@ -46,7 +46,7 @@ export const data = [
         maxScore: 20,
         category: 'HardBasic Scope',
         title: 'HardBasic things',
-        description: 'HardYou need to make things right, not wrong',
+        // description: 'HardYou need to make things right, not wrong',
       },
       {
         id: 'Hardextra_p1',
@@ -54,7 +54,7 @@ export const data = [
         maxScore: 30,
         category: 'HardExtra Scope',
         title: 'HardMore awesome things',
-        description: 'HardBe creative and make up some more awesome things',
+        // description: 'HardBe creative and make up some more awesome things',
       },
       {
         id: 'Hardfines_p1',
@@ -62,7 +62,7 @@ export const data = [
         maxScore: 0,
         category: 'HardFines',
         title: 'HardApp crashes',
-        description: 'HardApp causes BSoD!',
+      //  description: 'HardApp causes BSoD!',
       },
     ],
   },

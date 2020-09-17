@@ -58,229 +58,82 @@ const { TextArea } = Input;
 export class EditCheckingList extends React.Component {
     state = {
       numOfTask: '',
-      gData: [],
-      valueCreateCategory: '',
-      valueCreateItem: '',
+      markdown: '',
       valueTaskTitle: '',
       valueAuthor: '',
       valueState: '',
       value: '',
-      key: '',
-      field: '',
     };
 
     editTask = (task, number) => {
       this.setState({
-        gData: this.createGData(task),
+        markdown: this.createMarkdown(task),
         valueAuthor: task.author,
         valueTaskTitle: task.title,
         valueState: task.state,
         numOfTask: number,
-        valueCreateCategory: '',
-        valueCreateItem: '',
-        value: '',
-        key: '',
-        field: '',
+        // value: '',
       });
     }
 
     newTask = () => {
       this.setState({
-        gData: [{
-          title: 'Example Category',
-          key: 'new',
-          enableChildren: true,
-          children: [],
-        }],
+        markdown: '',
         valueAuthor: '',
         valueTaskTitle: '',
         valueState: 'DRAFT',
         numOfTask: 'new',
-        valueCreateCategory: '',
-        valueCreateItem: '',
-        value: '',
-        key: '',
-        field: '',
+        // value: '',
       });
     }
 
-    createGData = (data) => {
-      const gData = data.categoriesOrder.map((item, number) => ({
-        title: item,
-        key: item + number,
-        enableChildren: true,
-        children: data.items.filter((obj) => obj.category === item)
-          .map((it, num) => ({
-            title: it.title,
-            key: it.id,
-            enableChildren: false,
-            description: it.description,
-            minScore: it.minScore,
-            maxScore: it.maxScore,
-          })),
-      }));
-      return gData;
-    }
+    createMarkdown = (task) => {
+      let markdown = '';
 
-    createOutData = (data) => {
-      const items = [];
-      data.forEach((item, number) => {
-        item.children.forEach((it, num) => {
-          items.push({
-            id: `${it.title}-p${number}${num}`,
-            title: it.title,
-            description: it.description,
-            minScore: +it.minScore,
-            maxScore: +it.maxScore,
-            category: item.title,
-          });
+      task.categoriesOrder.forEach((item) => {
+        markdown += `  * **${item}**:\n`;
+
+        task.items.forEach((it) => {
+          const score = it.minScore === 0 ? `+${it.maxScore}` : `${it.minScore}`;
+          markdown += item === it.category ? `  * ${it.title}. ${score}\n` : '';
         });
       });
+      return markdown;
+    }
+
+    createTaskFromMarkdown=(markdown) => {
+      const arrCategories = markdown.match(/.*\*\*.+\*\*:/gm).map((item) => item.split('**')[1]);
+      const arrItems = markdown.split(/.*\*\*.+\*\*:/);
+      arrItems.splice(0, 1);
+      const arrItemsSeparate = arrItems.map((item) => item.split('*'));
+      arrItemsSeparate.forEach((item) => item.splice(0, 1));
+      arrItemsSeparate.forEach((item) => item.map((it) => it.replace(/(^\W*)|(\W*$)/g, '')));
 
       return {
         id: `${this.state.valueTaskTitle}-v1`,
         title: this.state.valueTaskTitle,
         author: this.state.valueAuthor,
         state: this.state.valueState,
-        categoriesOrder: data.map((item) => item.title),
-        items,
-
+        categoriesOrder: arrCategories,
+        items: arrItemsSeparate,
       };
     }
 
-    editItem = (key, field, value) => {
-      this.state.gData.forEach((item, number) => {
-        if (item.key === key) {
-          const data = this.state.gData;
-          data[number][field] = value;
-          this.setState({ gData: data });
-        }
-        item.children.forEach((it, num) => {
-          if (it.key === key) {
-            const data = this.state.gData;
-            data[number].children[num][field] = value;
-            this.setState({ gData: data });
-          }
-        });
-      });
-    }
-
-    deleteItem = (key) => {
-      this.state.gData.forEach((item, number) => {
-        if (item.key === key) {
-          const data = this.state.gData;
-          data.splice(number, 1);
-          this.setState({ gData: data });
-        }
-        item.children.forEach((it, num) => {
-          if (it.key === key) {
-            const data = this.state.gData;
-            data[number].children.splice(num, 1);
-            this.setState({ gData: data });
-          }
-        });
-      });
-    }
-
-    createCategory = (value) => {
-      this.state.gData.push({
-        title: value,
-        key: value + this.state.gData.length,
-        enableChildren: true,
-        children: [],
-      });
-    }
-
-    createItem = (value) => {
-      const [title, description, minScore, maxScore] = value.split('//');
-      this.state.gData[this.state.gData.length - 1].children.push({
-        title,
-        key: title + this.state.gData[this.state.gData.length - 1].children.length,
-        enableChildren: false,
-        description,
-        minScore,
-        maxScore,
-      });
-    }
-
-    onDrop = (info) => {
-      console.log(info);
-      const dropKey = info.node.props.eventKey;
-      const dragKey = info.dragNode.props.eventKey;
-      const dropPos = info.node.props.pos.split('-');
-      const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-
-      const loop = (data, key, callback) => {
-        for (let i = 0; i < data.length; i++) {
-          if (data[i].key === key) {
-            return callback(data[i], i, data);
-          }
-          if (data[i].children) {
-            loop(data[i].children, key, callback);
-          }
-        }
-      };
-      const data = [...this.state.gData];
-
-      // Find dragObject
-      let dragObj;
-      let arr1;
-      let index1;
-      loop(data, dragKey, (item, index, arr) => {
-        dragObj = item;
-        arr1 = arr;
-        index1 = index;
-      });
-
-      if (!info.dropToGap) {
-        // Drop on the content
-        loop(data, dropKey, (item) => {
-          if (!dragObj.enableChildren && item.enableChildren) {
-            arr1.splice(index1, 1);
-            item.children.push(dragObj);
-          }
-        });
-      } else if (
-        (info.node.props.children || []).length > 0 // Has children
-            && info.node.props.expanded // Is expanded
-            && dropPosition === 1 // On the bottom gap
-      ) {
-        loop(data, dropKey, (item) => {
-          item.children = item.children || [];
-          if (dragObj.enableChildren === item.enableChildren) {
-            arr1.splice(index1, 1);
-            item.children.unshift(dragObj);
-          }
-        });
+    insertTask=(task) => {
+      const result = data;
+      if (this.state.numOfTask === 'new') {
+        result.push(task);
+        console.log('>>>>', result);
       } else {
-        let ar;
-        let i;
-        let item1;
-        loop(data, dropKey, (item, index, arr) => {
-          ar = arr;
-          i = index;
-          item1 = item;
-        });
-        if (dropPosition === -1) {
-          if (dragObj.enableChildren === item1.enableChildren) {
-            arr1.splice(index1, 1);
-            ar.splice(i, 0, dragObj);
-          }
-        } else if (dragObj.enableChildren === item1.enableChildren) {
-          arr1.splice(index1, 1);
-          ar.splice(i + 1, 0, dragObj);
-        }
+        result[this.state.numOfTask] = task;
+        console.log('--->', result);
       }
-
-      this.setState({
-        gData: data,
-      });
-    };
+    }
 
     render() {
-      console.log(this.state.gData);
+      console.log(this.state.markdown);
       const {
-        gData, key, field, value, valueCreateItem, valueCreateCategory, valueTaskTitle, valueAuthor, valueState,
+        markdown, value, valueTaskTitle, valueAuthor, valueState, numOfTask,
       } = this.state;
 
       const menu = (
@@ -302,74 +155,75 @@ export class EditCheckingList extends React.Component {
 
       const options = ['DRAFT', 'PUBLISHED', 'ARCHIVED'];
 
-      const view = gData.map((item, index) => (
-        <>
-          <h4
-            key={item.key}
-            onClick={() => {
-              this.setState({
-                value: item.title,
-                key: item.key,
-                field: 'title',
-              });
-            }}
-          >
-            {`${index + 1} ${item.title}`}
-          </h4>
-          {item.children.map((it, ind) => (
-            <>
-              <p
-                key={it.key}
-                onClick={() => {
-                  this.setState({
-                    value: it.title,
-                    key: it.key,
-                    field: 'title',
-                  });
-                }}
-              >
-                {`   ${ind + 1} ${it.title}`}
-              </p>
-              <span
-                key={it.key + 1}
-                onClick={() => {
-                  this.setState({
-                    value: it.description,
-                    key: it.key,
-                    field: 'description',
-                  });
-                }}
-              >
-                {` ( ${it.description} )`}
-              </span>
-              <span
-                key={it.key + 2}
-                onClick={() => {
-                  this.setState({
-                    value: it.minScore.toString(),
-                    key: it.key,
-                    field: 'minScore',
-                  });
-                }}
-              >
-                {`минимальная оценка: ${it.minScore}`}
-              </span>
-              <span
-                key={it.key + 3}
-                onClick={() => {
-                  this.setState({
-                    value: it.maxScore.toString(),
-                    key: it.key,
-                    field: 'maxScore',
-                  });
-                }}
-              >
-                {`максимальная оценка: ${it.maxScore}`}
-              </span>
-            </>
-          ))}
-        </>
-      ));
+      // const view = gData.map((item, index) => (
+      //   <>
+      //     <h4
+      //       key={item.key}
+      //       onClick={() => {
+      //         this.setState({
+      //           value: item.title,
+      //           key: item.key,
+      //           field: 'title',
+      //         });
+      //       }}
+      //     >
+      //       {`${index + 1} ${item.title}`}
+      //     </h4>
+      //     {item.children.map((it, ind) => (
+      //       <>
+      //         <p
+      //           key={it.key}
+      //           onClick={() => {
+      //             this.setState({
+      //               value: it.title,
+      //               key: it.key,
+      //               field: 'title',
+      //             });
+      //           }}
+      //         >
+      //           {`   ${ind + 1} ${it.title}`}
+      //         </p>
+      //         <span
+      //           key={it.key + 1}
+      //           onClick={() => {
+      //             this.setState({
+      //               value: it.description,
+      //               key: it.key,
+      //               field: 'description',
+      //             });
+      //           }}
+      //         >
+      //           {` ( ${it.description} )`}
+      //         </span>
+      //         <span
+      //           key={it.key + 2}
+      //           onClick={() => {
+      //             this.setState({
+      //               value: it.minScore.toString(),
+      //               key: it.key,
+      //               field: 'minScore',
+      //             });
+      //           }}
+      //         >
+      //           {`минимальная оценка: ${it.minScore}`}
+      //         </span>
+      //         <span
+      //           key={it.key + 3}
+      //           onClick={() => {
+      //             this.setState({
+      //               value: it.maxScore.toString(),
+      //               key: it.key,
+      //               field: 'maxScore',
+      //             });
+      //           }}
+      //         >
+      //           {`максимальная оценка: ${it.maxScore}`}
+      //         </span>
+      //       </>
+      //     ))}
+      //   </>
+      // ));
+
       return (
         <>
           <Dropdown overlay={menu}>
@@ -379,15 +233,22 @@ export class EditCheckingList extends React.Component {
               <DownOutlined />
             </a>
           </Dropdown>
-          {gData.length !== 0
+          {numOfTask.length !== 0
                 && (
                 <>
                   <Button
                     onClick={() => {
-                      console.log('>>>', this.createOutData(gData));
+                      this.insertTask(this.createTaskFromMarkdown(markdown));
+                      this.setState({
+                        numOfTask: '',
+                        valueTaskTitle: '',
+                        valueAuthor: '',
+                        valueState: '',
+                        value: '',
+                      });
                     }}
                   >
-                    out data
+                    сохранить таск
                   </Button>
                   <Radio.Group
                     options={options}
@@ -412,26 +273,20 @@ export class EditCheckingList extends React.Component {
                       this.setState({ valueAuthor: e.target.value });
                     }}
                   />
-                  <Tree
-                    className="draggable-tree"
-                    draggable
-                            // blockNode
-                    onDrop={this.onDrop}
-                    treeData={gData}
-                  />
+
                   <TextArea
                     className="vvv"
                     placeholder="Редактирование"
                     autoSize
-                    value={value}
+                    value={markdown}
                     onChange={(e) => {
-                      this.setState({ value: e.target.value });
+                      this.setState({ markdown: e.target.value });
                     }}
                   />
                   <Button
                     disabled={value.length === 0}
                     onClick={() => {
-                      this.editItem(key, field, value);
+                      // this.editItem(key, field, value);
                       this.setState({
                         value: '',
                         key: '',
@@ -441,59 +296,7 @@ export class EditCheckingList extends React.Component {
                   >
                     сохранить изменения
                   </Button>
-                  <Button
-                    disabled={value.length === 0 || field !== 'title'}
-                    onClick={() => {
-                      this.deleteItem(key);
-                      this.setState({
-                        value: '',
-                        key: '',
-                        field: '',
-                      });
-                    }}
-                  >
-                    удалить
-                  </Button>
-                  <TextArea
-                    className="vvv"
-                    placeholder="Создать категорию"
-                    autoSize
-                    value={valueCreateCategory}
-                    onChange={(e) => {
-                      this.setState({ valueCreateCategory: e.target.value });
-                    }}
-                  />
-                  <Button
-                    disabled={valueCreateCategory.length === 0}
-                    onClick={() => {
-                      this.createCategory(valueCreateCategory);
-                      this.setState({
-                        valueCreateCategory: '',
-                      });
-                    }}
-                  >
-                    Создать новую категорию
-                  </Button>
-                  <TextArea
-                    className="vvv"
-                    placeholder="Создать пункт в категории (Название//Описание//Минимальная оценка//Максимальная оценка)"
-                    autoSize
-                    value={valueCreateItem}
-                    onChange={(e) => {
-                      this.setState({ valueCreateItem: e.target.value });
-                    }}
-                  />
-                  <Button
-                    disabled={valueCreateItem.split('//').length !== 4 || gData.length === 0}
-                    onClick={() => {
-                      this.createItem(valueCreateItem);
-                      this.setState({
-                        valueCreateItem: '',
-                      });
-                    }}
-                  >
-                    Создать новый пункт
-                  </Button>
+
                   <div className="view">
                     <h3>
                       Название таска:
@@ -503,7 +306,7 @@ export class EditCheckingList extends React.Component {
                       Автор:
                       {` ${valueAuthor}`}
                     </h3>
-                    {view}
+                    {/* {view} */}
                   </div>
                 </>
                 )}
