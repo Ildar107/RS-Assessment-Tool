@@ -78,12 +78,14 @@ export class EditCheckingList extends React.Component {
 
     newTask = () => {
       this.setState({
-        markdown: '',
+        markdown: '* **Категория1 +140**: \n'
+            + '  * Пункт1. +10 \n'
+            + '  * Пункт2. +10\n'
+            + '  * Пункт3. -20',
         valueAuthor: '',
         valueTaskTitle: '',
         valueState: 'DRAFT',
         numOfTask: 'new',
-        // value: '',
       });
     }
 
