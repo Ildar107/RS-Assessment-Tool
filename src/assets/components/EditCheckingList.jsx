@@ -101,13 +101,24 @@ export class EditCheckingList extends React.Component {
       return markdown;
     }
 
-    createTaskFromMarkdown=(markdown) => {
+    createTaskFromMarkdown = (markdown) => {
       const arrCategories = markdown.match(/\*\s+\*\*.+\*\*/gm).map((item) => item.split('**')[1]);
       const arrItems = markdown.split(/\*\s+\*\*.+\*\*/);
       arrItems.splice(0, 1);
       const arrItemsSeparate = arrItems.map((item) => item.split('*'));
       arrItemsSeparate.forEach((item) => item.splice(0, 1));
       const arrClean = arrItemsSeparate.map((item) => item.map((it) => it.replace(/(^[\s*\n:]*)|([\s*\n:]*$)/g, '')));
+      const arrObj = arrClean.map((item, number) => item.map((it, num) => ({
+        title: it.replace(/[\+\s*\n\-\d]*$/, '').replace(/\.$/g, ''),
+        maxScore: it.match(/[\+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, '').search(/\+/) === -1
+          ? 0 : +it.match(/[\+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, '').replace('+', ''),
+        minScore: it.match(/[\+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, '').search(/\-/) === -1
+          ? 0 : +it.match(/[\+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, ''),
+        id: `${it.replace(/[\+\s*\n\-\d]*$/, '').replace(/\.$/g, '')}-${number}${num}`,
+        category: arrCategories[number],
+      })));
+
+      const flatArr = arrObj.flat(2);
 
       return {
         id: `${this.state.valueTaskTitle}-v1`,
@@ -115,11 +126,11 @@ export class EditCheckingList extends React.Component {
         author: this.state.valueAuthor,
         state: this.state.valueState,
         categoriesOrder: arrCategories,
-        items: arrClean,
+        items: flatArr,
       };
     }
 
-    insertTask=(task) => {
+    insertTask = (task) => {
       const result = data;
       if (this.state.numOfTask === 'new') {
         result.push(task);
