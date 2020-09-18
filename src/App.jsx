@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Route, Switch, Redirect,
 } from 'react-router-dom';
-import { DatePicker } from 'antd';
+// import { DatePicker } from 'antd';
 import routes from './constants/routes';
 import MainPage from './pages/home/MainPage';
 
@@ -16,6 +16,9 @@ const App = () => (
     <Route path={routes.TEAM} exact>
       <h1>Dream Team</h1>
     </Route>
+    {/* <Route path={routes.MAINPAGE} exact>
+      <h1>MAINPAGE</h1>
+    </Route> */}
     <Route path={routes.TASKS} exact>
       <h1>TASKS</h1>
     </Route>

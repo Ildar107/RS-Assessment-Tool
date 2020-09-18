@@ -4,6 +4,7 @@ const TASKS = '/tasks';
 const REVIEWS = '/reviews';
 const REQUESTS = '/requests';
 const AUTHENTICATION = '/authentication';
+const MAINPAGE = '/mainpage';
 
 export default {
   LANDING,
@@ -12,4 +13,5 @@ export default {
   REVIEWS,
   REQUESTS,
   AUTHENTICATION,
+  MAINPAGE,
 };
