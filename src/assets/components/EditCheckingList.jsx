@@ -34,8 +34,8 @@ export class EditCheckingList extends React.Component {
                 + '  * Пункт1. +10 \n'
                 + '  * Пункт2. +10\n'
                 + '  * Пункт3. -20',
-        valueAuthor: 'Авор',
-        valueTaskTitle: 'Название',
+        valueAuthor: '',
+        valueTaskTitle: '',
         valueState: 'DRAFT',
         numOfTask: 'new',
         view: '',
@@ -160,7 +160,7 @@ export class EditCheckingList extends React.Component {
       const options = ['DRAFT', 'PUBLISHED', 'ARCHIVED'];
 
       return (
-        <>
+        <div className="edit-task">
           <Dropdown overlay={menu}>
             <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
               Выбор таска
@@ -171,7 +171,56 @@ export class EditCheckingList extends React.Component {
           {numOfTask.length !== 0
                 && (
                 <>
+                  <div>
+                    <p className="input-name">Состояние:</p>
+                    <Radio.Group
+                      options={options}
+                      onChange={(e) => this.setState({ valueState: e.target.value })}
+                      value={valueState}
+                    />
+                  </div>
+                  <p className="input-name">Название таска:</p>
+                  <TextArea
+                    className="vvv"
+                    placeholder="Название таска"
+                    autoSize
+                    value={valueTaskTitle}
+                    onChange={(e) => {
+                      this.setState({ valueTaskTitle: e.target.value });
+                    }}
+                  />
+                  <p className="input-name">Автор:</p>
+                  <TextArea
+                    className="vvv"
+                    placeholder="Автор"
+                    autoSize
+                    value={valueAuthor}
+                    onChange={(e) => {
+                      this.setState({ valueAuthor: e.target.value });
+                    }}
+                  />
+                  <p className="input-name">Окно редактирования:</p>
+                  <TextArea
+                    className="vvv"
+                    placeholder="Редактирование"
+                    autoSize
+                    value={markdown}
+                    onChange={(e) => {
+                      this.setState({ markdown: e.target.value });
+                    }}
+                  />
                   <Button
+                    className="edit-button"
+                    disabled={markdown.length === 0}
+                    onClick={() => {
+                      this.generateView();
+                    }}
+                  >
+                    Показать результат
+                  </Button>
+                  <Button
+                    className="edit-button"
+                    disabled={markdown.length === 0}
                     onClick={() => {
                       this.insertTask(this.createTaskFromMarkdown(markdown));
                       this.setState({
@@ -186,54 +235,12 @@ export class EditCheckingList extends React.Component {
                   >
                     сохранить таск
                   </Button>
-                  <Radio.Group
-                    options={options}
-                    onChange={(e) => this.setState({ valueState: e.target.value })}
-                    value={valueState}
-                  />
-                  <TextArea
-                    className="vvv"
-                    placeholder="Название таска"
-                    autoSize
-                    value={valueTaskTitle}
-                    onChange={(e) => {
-                      this.setState({ valueTaskTitle: e.target.value });
-                    }}
-                  />
-                  <TextArea
-                    className="vvv"
-                    placeholder="Автор"
-                    autoSize
-                    value={valueAuthor}
-                    onChange={(e) => {
-                      this.setState({ valueAuthor: e.target.value });
-                    }}
-                  />
-
-                  <TextArea
-                    className="vvv"
-                    placeholder="Редактирование"
-                    autoSize
-                    value={markdown}
-                    onChange={(e) => {
-                      this.setState({ markdown: e.target.value });
-                    }}
-                  />
-                  <Button
-                            // disabled={value.length === 0}
-                    onClick={() => {
-                      this.generateView();
-                    }}
-                  >
-                    Показать результат
-                  </Button>
-
                   <div className="view">
                     {view}
                   </div>
                 </>
                 )}
-        </>
+        </div>
       );
     }
 }
