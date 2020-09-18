@@ -1,59 +1,11 @@
 import React from 'react';
 import {
-  Input, Tree, Button, Row, Col, Radio, Menu, Dropdown,
+  Input, Button, Row, Col, Radio, Menu, Dropdown,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { data } from './Data';
 
 const { TextArea } = Input;
-
-// const gData = [
-//     {
-//         title: 'Группа пунктов А',
-//         key: 'a',
-//         enableChildren: true,
-//         children: [
-//             {
-//                 title: 'Пункт А',
-//                 key: 'aa',
-//                 enableChildren: false,
-//                 children: []
-//             },
-//             {
-//                 title: 'Пункт А1',
-//                 key: 'aab',
-//                 enableChildren: false,
-//                 children: []
-//             }
-//         ]
-//     },
-//     {
-//         title: 'Группа пунктов Б',
-//         key: 'b',
-//         enableChildren: true,
-//         children: [
-//             {
-//                 title: 'Пункт Б',
-//                 key: 'bb',
-//                 enableChildren: false,
-//                 children: [],
-//             },
-//             {
-//                 title: 'Пункт Б1',
-//                 key: 'bbb',
-//                 enableChildren: false,
-//                 children: [],
-//             }
-//         ]
-//     },
-//     {
-//         title: 'Группа пунктов B',
-//         key: 'ccc',
-//         enableChildren: true,
-//         children: []
-//     }
-//
-// ];
 
 export class EditCheckingList extends React.Component {
     state = {
@@ -62,7 +14,7 @@ export class EditCheckingList extends React.Component {
       valueTaskTitle: '',
       valueAuthor: '',
       valueState: '',
-      value: '',
+      view: '',
     };
 
     editTask = (task, number) => {
@@ -72,20 +24,21 @@ export class EditCheckingList extends React.Component {
         valueTaskTitle: task.title,
         valueState: task.state,
         numOfTask: number,
-        // value: '',
+        view: '',
       });
     }
 
     newTask = () => {
       this.setState({
         markdown: '* **Категория1 +140**: \n'
-            + '  * Пункт1. +10 \n'
-            + '  * Пункт2. +10\n'
-            + '  * Пункт3. -20',
-        valueAuthor: '',
-        valueTaskTitle: '',
+                + '  * Пункт1. +10 \n'
+                + '  * Пункт2. +10\n'
+                + '  * Пункт3. -20',
+        valueAuthor: 'Авор',
+        valueTaskTitle: 'Название',
         valueState: 'DRAFT',
         numOfTask: 'new',
+        view: '',
       });
     }
 
@@ -143,10 +96,48 @@ export class EditCheckingList extends React.Component {
       }
     }
 
+    generateView = () => {
+      const task = this.createTaskFromMarkdown(this.state.markdown);
+      const list = task.categoriesOrder.map((item) => (
+        <div>
+          <h4>
+            {`● ${item}:`}
+          </h4>
+          {
+                    task.items.map((it) => (
+                      item === it.category
+                        ? (
+                          <p>
+                            {`○ ${it.title}. ${it.maxScore === 0 ? `${it.minScore}` : `+${it.maxScore}`}`}
+                            :
+                          </p>
+                        ) : null
+                    ))
+                }
+        </div>
+      ));
+
+      const view = (
+        <>
+          <h3>
+            Название таска:
+            {` ${this.state.valueTaskTitle}`}
+          </h3>
+          <h3>
+            Автор:
+            {` ${this.state.valueAuthor}`}
+          </h3>
+          {list}
+        </>
+      );
+
+      this.setState({ view });
+    }
+
     render() {
       console.log(this.state.markdown);
       const {
-        markdown, value, valueTaskTitle, valueAuthor, valueState, numOfTask,
+        markdown, view, valueTaskTitle, valueAuthor, valueState, numOfTask,
       } = this.state;
 
       const menu = (
@@ -168,75 +159,6 @@ export class EditCheckingList extends React.Component {
 
       const options = ['DRAFT', 'PUBLISHED', 'ARCHIVED'];
 
-      // const view = gData.map((item, index) => (
-      //   <>
-      //     <h4
-      //       key={item.key}
-      //       onClick={() => {
-      //         this.setState({
-      //           value: item.title,
-      //           key: item.key,
-      //           field: 'title',
-      //         });
-      //       }}
-      //     >
-      //       {`${index + 1} ${item.title}`}
-      //     </h4>
-      //     {item.children.map((it, ind) => (
-      //       <>
-      //         <p
-      //           key={it.key}
-      //           onClick={() => {
-      //             this.setState({
-      //               value: it.title,
-      //               key: it.key,
-      //               field: 'title',
-      //             });
-      //           }}
-      //         >
-      //           {`   ${ind + 1} ${it.title}`}
-      //         </p>
-      //         <span
-      //           key={it.key + 1}
-      //           onClick={() => {
-      //             this.setState({
-      //               value: it.description,
-      //               key: it.key,
-      //               field: 'description',
-      //             });
-      //           }}
-      //         >
-      //           {` ( ${it.description} )`}
-      //         </span>
-      //         <span
-      //           key={it.key + 2}
-      //           onClick={() => {
-      //             this.setState({
-      //               value: it.minScore.toString(),
-      //               key: it.key,
-      //               field: 'minScore',
-      //             });
-      //           }}
-      //         >
-      //           {`минимальная оценка: ${it.minScore}`}
-      //         </span>
-      //         <span
-      //           key={it.key + 3}
-      //           onClick={() => {
-      //             this.setState({
-      //               value: it.maxScore.toString(),
-      //               key: it.key,
-      //               field: 'maxScore',
-      //             });
-      //           }}
-      //         >
-      //           {`максимальная оценка: ${it.maxScore}`}
-      //         </span>
-      //       </>
-      //     ))}
-      //   </>
-      // ));
-
       return (
         <>
           <Dropdown overlay={menu}>
@@ -257,7 +179,8 @@ export class EditCheckingList extends React.Component {
                         valueTaskTitle: '',
                         valueAuthor: '',
                         valueState: '',
-                        value: '',
+                        view: '',
+                        markdown: '',
                       });
                     }}
                   >
@@ -297,29 +220,16 @@ export class EditCheckingList extends React.Component {
                     }}
                   />
                   <Button
-                    disabled={value.length === 0}
+                            // disabled={value.length === 0}
                     onClick={() => {
-                      // this.editItem(key, field, value);
-                      this.setState({
-                        value: '',
-                        key: '',
-                        field: '',
-                      });
+                      this.generateView();
                     }}
                   >
-                    сохранить изменения
+                    Показать результат
                   </Button>
 
                   <div className="view">
-                    <h3>
-                      Название таска:
-                      {` ${valueTaskTitle}`}
-                    </h3>
-                    <h3>
-                      Автор:
-                      {` ${valueAuthor}`}
-                    </h3>
-                    {/* {view} */}
+                    {view}
                   </div>
                 </>
                 )}
