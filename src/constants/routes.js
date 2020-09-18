@@ -3,6 +3,7 @@ const TEAM = '/team';
 const TASKS = '/tasks';
 const REVIEWS = '/reviews';
 const REQUESTS = '/requests';
+const AUTHENTICATION = '/authentication';
 
 export default {
   LANDING,
@@ -10,4 +11,5 @@ export default {
   TASKS,
   REVIEWS,
   REQUESTS,
+  AUTHENTICATION,
 };
