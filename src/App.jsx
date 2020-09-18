@@ -5,6 +5,7 @@ import {
 // import { DatePicker } from 'antd';
 import routes from './constants/routes';
 import MainPage from './pages/home/MainPage';
+import AuthPage from './pages/authentication/AuthPage';
 
 const App = () => (
   <Switch>
@@ -19,6 +20,9 @@ const App = () => (
     {/* <Route path={routes.MAINPAGE} exact>
       <h1>MAINPAGE</h1>
     </Route> */}
+    <Route path={routes.AUTHENTICATION} exact>
+      <AuthPage />
+    </Route>
     <Route path={routes.TASKS} exact>
       <h1>TASKS</h1>
     </Route>
