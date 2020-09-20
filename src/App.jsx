@@ -6,32 +6,32 @@ import {
 import routes from './constants/routes';
 import MainPage from './pages/home/MainPage';
 import AuthPage from './pages/authentication/AuthPage';
+import PrivateRoute from './components/PrivateRoute';
 
 const App = () => (
   <Switch>
-    <Route path={routes.LANDING} exact>
-      {/* <h1>Start Project!</h1>
-      <DatePicker /> */}
-      <MainPage />
+    <Route path={routes.AUTHENTICATION} exact>
+      <AuthPage />
     </Route>
+    <PrivateRoute path={routes.LANDING} exact>
+      <MainPage />
+    </PrivateRoute>
     <Route path={routes.TEAM} exact>
       <h1>Dream Team</h1>
     </Route>
     {/* <Route path={routes.MAINPAGE} exact>
       <h1>MAINPAGE</h1>
     </Route> */}
-    <Route path={routes.AUTHENTICATION} exact>
-      <AuthPage />
-    </Route>
-    <Route path={routes.TASKS} exact>
+
+    <PrivateRoute path={routes.TASKS} exact>
       <h1>TASKS</h1>
-    </Route>
-    <Route path={routes.REVIEWS} exact>
+    </PrivateRoute>
+    <PrivateRoute path={routes.REVIEWS} exact>
       <h1>REVIEWS</h1>
-    </Route>
-    <Route path={routes.REQUESTS} exact>
+    </PrivateRoute>
+    <PrivateRoute path={routes.REQUESTS} exact>
       <h1>REQUESTS</h1>
-    </Route>
+    </PrivateRoute>
     <Route>
       <Redirect to={routes.LANDING} />
     </Route>
