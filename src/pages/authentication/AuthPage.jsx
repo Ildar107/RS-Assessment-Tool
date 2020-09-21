@@ -1,5 +1,8 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { Select } from 'antd';
+
+const { Option } = Select;
 
 const AuthPage = ({ setIsAuthenticatedState, setRole, role }) => {
   const { loginWithRedirect } = useAuth0();
@@ -14,19 +17,20 @@ const AuthPage = ({ setIsAuthenticatedState, setRole, role }) => {
           loginWithRedirect();
         }}
       >
-        Log In
+        Login with GitHub
       </button>
-      <select
+      <Select
+        style={{ width: 110 }}
         value={role}
-        onChange={({ target }) => {
-          setRole(target.value);
+        onChange={(value) => {
+          setRole(value);
         }}
       >
-        <option value="author">author</option>
-        <option value="student">student</option>
-        <option value="supervisor">supervisor</option>
-        <option value="course_manager">course_manager</option>
-      </select>
+        <Option value="author">Author</Option>
+        <Option value="student">Student</Option>
+        <Option value="supervisor">Supervisor</Option>
+        <Option value="course_manager">Manager</Option>
+      </Select>
     </div>
   );
 };
