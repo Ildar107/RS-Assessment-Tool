@@ -14,18 +14,26 @@ const App = () => {
   // const { isAuthenticated } = useAuth0();
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(localStorage.getItem('isAuthenticated'));
   // console.log('isAuthenticated', isAuthenticated);
+  const [role, setRole] = useState(localStorage.getItem('role') || 'author');
+
   return (
     <Switch>
       <Route
         path={routes.AUTHENTICATION}
         exact
-        component={() => <AuthPage setIsAuthenticatedState={setIsAuthenticatedState} />}
+        component={() => (
+          <AuthPage
+            setIsAuthenticatedState={setIsAuthenticatedState}
+            setRole={setRole}
+            role={role}
+          />
+        )}
         // setIsAuthenticatedState={setIsAuthenticatedState}
       />
       <PrivateRoute
         path={routes.LANDING}
         exact
-        component={() => <MainPage setIsAuthenticatedState={setIsAuthenticatedState} />}
+        component={() => <MainPage setIsAuthenticatedState={setIsAuthenticatedState} role={role} />}
         isAuthenticatedState={isAuthenticatedState}
         // setIsAuthenticatedState={setIsAuthenticatedState}
       />
