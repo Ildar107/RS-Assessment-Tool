@@ -8,7 +8,7 @@ const { Option } = Select;
 const AuthPage = ({ setIsAuthenticatedState, setRole, role }) => {
   const { loginWithRedirect } = useAuth0();
   return (
-    <div className="auth-page">
+    <div className="auth-page-wrapper">
       <label className="label-for-select">
         Choose your role:
         <br />
@@ -19,10 +19,10 @@ const AuthPage = ({ setIsAuthenticatedState, setRole, role }) => {
             setRole(value);
           }}
         >
-          <Option value="author">Author</Option>
-          <Option value="student">Student</Option>
-          <Option value="supervisor">Supervisor</Option>
-          <Option value="course_manager">Manager</Option>
+          <Option value="Author">Author</Option>
+          <Option value="Student">Student</Option>
+          <Option value="Supervisor">Supervisor</Option>
+          <Option value="Manager">Manager</Option>
         </Select>
 
       </label>

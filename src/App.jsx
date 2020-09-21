@@ -14,7 +14,7 @@ const App = () => {
   // const { isAuthenticated } = useAuth0();
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(localStorage.getItem('isAuthenticated'));
   // console.log('isAuthenticated', isAuthenticated);
-  const [role, setRole] = useState(localStorage.getItem('role') || 'author');
+  const [role, setRole] = useState(localStorage.getItem('role') || 'Author');
 
   return (
     <Switch>
