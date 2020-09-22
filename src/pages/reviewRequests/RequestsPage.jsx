@@ -7,6 +7,9 @@ const RequestsPage = () => {
     {
       title: 'Name',
       dataIndex: 'name',
+      sorter: {
+        compare: (a, b) => a.name - b.name,
+      },
     },
     {
       title: 'Chinese Score',
@@ -121,6 +124,9 @@ const RequestsPage = () => {
     {
       title: 'Name',
       dataIndex: 'name',
+      sorter: {
+        compare: (a, b) => a.name - b.name,
+      },
     },
     {
       title: 'Chinese Score',
@@ -178,8 +184,18 @@ const RequestsPage = () => {
 
   return (
     <div className="request-page-wrapper">
-      <Table columns={columns1} dataSource={data1} style={{ width: 700 }} />
-      <Table columns={columns2} dataSource={data2} style={{ width: 700 }} />
+      <Table
+        columns={columns1}
+        dataSource={data1}
+        style={{ width: 700 }}
+        pagination={{ defaultPageSize: 5 }}
+      />
+      <Table
+        columns={columns2}
+        dataSource={data2}
+        style={{ width: 700 }}
+        pagination={{ defaultPageSize: 5 }}
+      />
     </div>
   );
 };
