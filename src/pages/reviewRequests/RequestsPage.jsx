@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, Select } from 'antd';
 import './requestsPage.scss';
 
 const RequestsPage = () => {
@@ -197,21 +197,25 @@ const RequestsPage = () => {
         <Table
           columns={columns1}
           dataSource={data1}
-          style={{ width: 350, height: 200 }}
+          style={{ width: 300 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Tasks for review'}
           bordered
           size="small"
+          tableLayout="fixed"
         />
         <Table
           columns={columns2}
           dataSource={data2}
-          style={{ width: 350, height: 200 }}
+          style={{ width: 300 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Selfchecking'}
           bordered
           size="small"
+          tableLayout="fixed"
         />
+        <Button>New Task Request</Button>
+        <Button>Check Task</Button>
       </div>
 
       <div className="task-review-wrapper">
@@ -223,6 +227,30 @@ const RequestsPage = () => {
         </header>
         <main className="task-review-main">
           {currentTask}
+        </main>
+      </div>
+
+      <div className="task-request-wrapper">
+        <header className="task-request-header">
+          <h3>Task request</h3>
+          <Button>Save</Button>
+          <Button>Cancel</Button>
+        </header>
+        <main className="task-request-main">
+          <div>
+            <span>
+              Task Name:
+              {' '}
+            </span>
+            <Select style={{ width: 110 }} />
+          </div>
+          <div>
+            <span>
+              Pull Request:
+              {' '}
+            </span>
+            <Select style={{ width: 110 }} />
+          </div>
         </main>
       </div>
     </div>

@@ -3,12 +3,18 @@
   padding: 20px;
 
   .task-review-wrapper {
-    min-width: 800px;
-    min-height: 800px;
+    width: 600px;
+    height: 600px;
     border: 1px solid #1112;
     margin-left: 10px;
   }
-  .task-review-header {
+  .task-request-wrapper {
+    width: 400px;
+    height: 300px;
+    border: 1px solid #1112;
+    margin-left: 10px;
+  }
+  .task-review-header, .task-request-header {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -16,7 +22,7 @@
     border: 1px solid #1112;
     width: 100%;
   }
-  .task-review-main {
+  .task-review-main, .task-request-main {
     padding: 20px;
   }
   h3 {
