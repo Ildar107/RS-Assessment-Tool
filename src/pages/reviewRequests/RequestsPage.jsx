@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'antd';
+import './requestsPage.scss';
 
 const RequestsPage = () => {
-  // const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
+  const [currentTask, setCurrentTask] = useState('placeholder');
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log(data);
+    };
+    fetchData();
+  }, []);
+
   const columns1 = [
     {
       title: 'Name',
@@ -184,18 +193,38 @@ const RequestsPage = () => {
 
   return (
     <div className="request-page-wrapper">
-      <Table
-        columns={columns1}
-        dataSource={data1}
-        style={{ width: 700 }}
-        pagination={{ defaultPageSize: 5 }}
-      />
-      <Table
-        columns={columns2}
-        dataSource={data2}
-        style={{ width: 700 }}
-        pagination={{ defaultPageSize: 5 }}
-      />
+      <div className="table-wrapper">
+        <Table
+          columns={columns1}
+          dataSource={data1}
+          style={{ width: 350, height: 200 }}
+          pagination={{ defaultPageSize: 5 }}
+          title={() => 'Tasks for review'}
+          bordered
+          size="small"
+        />
+        <Table
+          columns={columns2}
+          dataSource={data2}
+          style={{ width: 350, height: 200 }}
+          pagination={{ defaultPageSize: 5 }}
+          title={() => 'Selfchecking'}
+          bordered
+          size="small"
+        />
+      </div>
+
+      <div className="task-review-wrapper">
+        <header className="task-review-header">
+          <h3>Task Review</h3>
+          <span>Score: 69</span>
+          <Button>Save</Button>
+          <Button>Cancel</Button>
+        </header>
+        <main className="task-review-main">
+          {currentTask}
+        </main>
+      </div>
     </div>
   );
 };
