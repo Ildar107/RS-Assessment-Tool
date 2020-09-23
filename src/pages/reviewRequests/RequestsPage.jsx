@@ -26,28 +26,28 @@ const RequestsPage = ({ user }) => {
 
   const columns1 = [
     {
-      title: 'Name',
+      title: 'Task',
       dataIndex: 'name',
       sorter: {
         compare: (a, b) => a.name - b.name,
       },
     },
     {
-      title: 'Chinese Score',
+      title: 'User',
       dataIndex: 'chinese',
       sorter: {
         compare: (a, b) => a.chinese - b.chinese,
       },
     },
     {
-      title: 'Math Score',
+      title: 'Deadline',
       dataIndex: 'math',
       sorter: {
         compare: (a, b) => a.math - b.math,
       },
     },
     {
-      title: 'English Score',
+      title: 'Checked',
       dataIndex: 'english',
       sorter: {
         compare: (a, b) => a.english - b.english,
@@ -143,28 +143,28 @@ const RequestsPage = ({ user }) => {
   ];
   const columns2 = [
     {
-      title: 'Name',
+      title: 'Task',
       dataIndex: 'name',
       sorter: {
         compare: (a, b) => a.name - b.name,
       },
     },
     {
-      title: 'Chinese Score',
+      title: 'Deadline',
       dataIndex: 'chinese',
       sorter: {
         compare: (a, b) => a.chinese - b.chinese,
       },
     },
     {
-      title: 'Math Score',
+      title: 'Checked',
       dataIndex: 'math',
       sorter: {
         compare: (a, b) => a.math - b.math,
       },
     },
     {
-      title: 'English Score',
+      title: 'Score',
       dataIndex: 'english',
       sorter: {
         compare: (a, b) => a.english - b.english,
@@ -209,7 +209,7 @@ const RequestsPage = ({ user }) => {
         <Table
           columns={columns1}
           dataSource={data1}
-          style={{ width: 300 }}
+          style={{ width: 350 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Tasks for review'}
           bordered
@@ -219,7 +219,7 @@ const RequestsPage = ({ user }) => {
         <Table
           columns={columns2}
           dataSource={data2}
-          style={{ width: 300 }}
+          style={{ width: 350 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Selfchecking'}
           bordered
