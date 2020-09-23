@@ -2,12 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Select } from 'antd';
 import './requestsPage.scss';
 
-const RequestsPage = () => {
+const { Option } = Select;
+
+const RequestsPage = ({ user }) => {
   const [data, setData] = useState([]);
-  const [currentTask, setCurrentTask] = useState('placeholder');
+  const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
+  console.log(user);
+  const userFromDB = 'Ulises_Johns82'; // replace with user later
   useEffect(() => {
-    const fetchData = async () => {
-      console.log(data);
+    const fetchData = () => {
+      fetch('https://x-check-json-server.herokuapp.com/users', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((result) => console.log('res', result))
+        .catch((err) => console.log('error', err));
     };
     fetchData();
   }, []);

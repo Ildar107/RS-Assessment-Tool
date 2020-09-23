@@ -10,6 +10,7 @@ import RequestsPage from './pages/reviewRequests/RequestsPage';
 
 const App = () => {
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(localStorage.getItem('isAuthenticated'));
+  const [user] = useState(localStorage.getItem('user'));
   const [role, setRole] = useState(localStorage.getItem('role') || 'author');
 
   return (
@@ -58,7 +59,7 @@ const App = () => {
       <PrivateRoute
         path={routes.REQUESTS}
         exact
-        component={RequestsPage}
+        component={() => <RequestsPage user={user} />}
         isAuthenticatedState={isAuthenticatedState}
       />
       <Route>
