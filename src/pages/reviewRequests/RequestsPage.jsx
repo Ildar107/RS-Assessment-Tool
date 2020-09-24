@@ -4,22 +4,32 @@ import './requestsPage.scss';
 
 const { Option } = Select;
 
+const ParseJsonIntoTaskCheck = (task) => {
+  console.log(task);
+  if (typeof task === 'string') return task;
+  return (
+    <div>kek</div>
+  );
+};
+
 const RequestsPage = ({ user }) => {
   const [data, setData] = useState([]);
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
+  const [currentDate] = useState('2020-10-07'); // replace with new Date and format to yyyy-mm-dd later somehow
+
   console.log(user);
   const userFromDB = 'Ulises_Johns82'; // replace with user later
   useEffect(() => {
-    const fetchData = () => {
-      fetch('https://x-check-json-server.herokuapp.com/users', {
+    const fetchData = async () => {
+      const res = await fetch('https://x-check-json-server.herokuapp.com/db', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      })
-        .then((res) => res.json())
-        .then((result) => console.log('res', result))
-        .catch((err) => console.log('error', err));
+      });
+      const fetchedData = await res.json();
+      setData(fetchedData);
+      console.log(data);
     };
     fetchData();
   }, []);
@@ -215,6 +225,7 @@ const RequestsPage = ({ user }) => {
           bordered
           size="small"
           tableLayout="fixed"
+          onRow={(record) => ({ onClick: () => setCurrentTask(record) })}
         />
         <Table
           columns={columns2}
@@ -225,6 +236,7 @@ const RequestsPage = ({ user }) => {
           bordered
           size="small"
           tableLayout="fixed"
+          onRow={(record) => ({ onClick: () => setCurrentTask(record) })}
         />
         <Button>New Task Request</Button>
         <Button>Check Task</Button>
@@ -238,7 +250,7 @@ const RequestsPage = ({ user }) => {
           <Button>Cancel</Button>
         </header>
         <main className="task-review-main">
-          {currentTask}
+          {ParseJsonIntoTaskCheck(currentTask)}
         </main>
       </div>
 
