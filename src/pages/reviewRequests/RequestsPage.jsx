@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Select } from 'antd';
+import {
+  Table, Button, Select, Radio,
+} from 'antd';
 import './requestsPage.scss';
 
 const { Option } = Select;
@@ -7,8 +9,73 @@ const { Option } = Select;
 const ParseJsonIntoTaskCheck = (task) => {
   console.log(task);
   if (typeof task === 'string') return task;
+
+  const { categoriesOrder, items } = task;
+  // const headers = categoriesOrder
+  const basicItems = items.filter(({ name }) => name.startsWith('basic'));
+  const extraItems = items.filter(({ name }) => name.startsWith('extra'));
+  const finesItems = items.filter(({ name }) => name.startsWith('fines'));
+  console.log(basicItems);
+  const basicScope = (
+    <div>
+      <h3>Basic Scope</h3>
+      <ul>
+        {basicItems.map(({ minScore, maxScore, title }) => (
+          <li style={{ listStyle: 'none' }}>
+            <h5>{title}</h5>
+            <Radio.Group onChange={() => {}} value={0}>
+              <Radio value={minScore}>Не выполнено</Radio>
+              <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
+              <Radio value={maxScore}>Выполнено полностью</Radio>
+            </Radio.Group>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+  const extraScope = (
+    <div>
+      <h3>Extra Scope</h3>
+      <ul>
+        {extraItems.map(({ minScore, maxScore, title }) => (
+          <li style={{ listStyle: 'none' }}>
+            <h5>{title}</h5>
+            <Radio.Group onChange={() => {}} value={0}>
+              <Radio value={minScore}>Не выполнено</Radio>
+              <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
+              <Radio value={maxScore}>Выполнено полностью</Radio>
+            </Radio.Group>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+  const fines = (
+    <div>
+      <h3>Fines</h3>
+      <ul>
+        {finesItems.map(({ minScore, maxScore, title }) => (
+          <li style={{ listStyle: 'none' }}>
+            <h5>{title}</h5>
+            <Radio.Group onChange={() => {}} value={0}>
+              <Radio value={minScore}>Не выполнено</Radio>
+              <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
+              <Radio value={maxScore}>Выполнено полностью</Radio>
+            </Radio.Group>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return (
-    <div>{JSON.stringify(task)}</div>
+    <div>
+      {basicScope}
+      <br />
+      {extraScope}
+      <br />
+      {fines}
+    </div>
   );
 };
 
@@ -66,7 +133,7 @@ const RequestsPage = ({ user }) => {
       const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
       const { reviewerOf } = findUserCrossCheck;
       const findTask = tasks.find(({ id }) => taskId === id);
-      const { name } = findTask;
+      const { name, categoriesOrder, items } = findTask;
       reviewerOf.forEach(({ id }) => {
         res.push({
           key: String(+key + 1),
@@ -74,6 +141,8 @@ const RequestsPage = ({ user }) => {
           id,
           endDate,
           checked: String(false), // make it true when graded a task somehow
+          categoriesOrder,
+          items,
         });
         key = String(+key + 1);
       });
@@ -81,7 +150,6 @@ const RequestsPage = ({ user }) => {
     console.log(res);
     return res;
   };
-  // generateFirstTableData();
 
   const generateSecondTableData = () => {
 
@@ -232,37 +300,37 @@ const RequestsPage = ({ user }) => {
       },
     },
   ];
-
-  const data2 = [
-    {
-      key: '1',
-      name: 'John Brown',
-      chinese: 98,
-      math: 60,
-      english: 70,
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      chinese: 98,
-      math: 66,
-      english: 89,
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      chinese: 98,
-      math: 90,
-      english: 70,
-    },
-    {
-      key: '4',
-      name: 'Jim Red',
-      chinese: 88,
-      math: 99,
-      english: 89,
-    },
-  ];
+  const data2 = '';
+  // const data2 = [
+  //   {
+  //     key: '1',
+  //     name: 'John Brown',
+  //     chinese: 98,
+  //     math: 60,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '2',
+  //     name: 'Jim Green',
+  //     chinese: 98,
+  //     math: 66,
+  //     english: 89,
+  //   },
+  //   {
+  //     key: '3',
+  //     name: 'Joe Black',
+  //     chinese: 98,
+  //     math: 90,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '4',
+  //     name: 'Jim Red',
+  //     chinese: 88,
+  //     math: 99,
+  //     english: 89,
+  //   },
+  // ];
 
   return (
     <div className="request-page-wrapper">
