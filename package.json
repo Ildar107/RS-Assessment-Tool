@@ -51,7 +51,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.2.2",
+    "@auth0/auth0-react": "^1.0.0",
     "antd": "^4.6.3",
     "direct-styled": "^1.0.1",
     "react": "^16.13.1",

@@ -1,9 +1,17 @@
 const LANDING = '/';
 const TEAM = '/team';
-const EditCheckingList = '/editCheckingList';
+const TASKS = '/tasks';
+const REVIEWS = '/reviews';
+const REQUESTS = '/requests';
+const AUTHENTICATION = '/authentication';
+const MAINPAGE = '/mainpage';
 
 export default {
   LANDING,
   TEAM,
-  EditCheckingList,
+  TASKS,
+  REVIEWS,
+  REQUESTS,
+  AUTHENTICATION,
+  MAINPAGE,
 };
