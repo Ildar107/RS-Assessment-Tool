@@ -56,37 +56,6 @@ const RequestsPage = ({ user }) => {
     fetchData();
   }, []);
 
-  const columns1 = [
-    {
-      title: 'Task',
-      dataIndex: 'name',
-      sorter: {
-        compare: (a, b) => a.name > b.name,
-      },
-    },
-    {
-      title: 'User',
-      dataIndex: 'chinese',
-      sorter: {
-        compare: (a, b) => a.chinese - b.chinese,
-      },
-    },
-    {
-      title: 'Deadline',
-      dataIndex: 'math',
-      sorter: {
-        compare: (a, b) => a.math - b.math,
-      },
-    },
-    {
-      title: 'Checked',
-      dataIndex: 'english',
-      sorter: {
-        compare: (a, b) => a.english - b.english,
-      },
-    },
-  ];
-
   const generateFirstTableData = () => {
     const res = [];
     let key = '0';
@@ -104,7 +73,7 @@ const RequestsPage = ({ user }) => {
           name,
           id,
           endDate,
-          checked: false, // make it true when graded a task somehow
+          checked: String(false), // make it true when graded a task somehow
         });
         key = String(+key + 1);
       });
@@ -112,13 +81,40 @@ const RequestsPage = ({ user }) => {
     console.log(res);
     return res;
   };
-  generateFirstTableData();
+  // generateFirstTableData();
 
   const generateSecondTableData = () => {
 
   };
+
   const data1 = generateFirstTableData();
 
+  const columns1 = [
+    {
+      title: 'Task',
+      dataIndex: 'name',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'User',
+      dataIndex: 'id',
+      sorter: (a, b) => a.id.length - b.id.length,
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Deadline',
+      dataIndex: 'endDate',
+      sorter: (a, b) => a.endDate.length - b.endDate.length,
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Checked',
+      dataIndex: 'checked',
+      sorter: (a, b) => a.checked.length - b.checked.length,
+      sortDirections: ['descend', 'ascend'],
+    },
+  ];
   // const data1 = [
   //   {
   //     key: '1',
@@ -211,19 +207,19 @@ const RequestsPage = ({ user }) => {
       title: 'Task',
       dataIndex: 'name',
       sorter: {
-        compare: (a, b) => a.name > b.name,
+        compare: (a, b) => a.name - b.name,
       },
     },
     {
       title: 'Deadline',
-      dataIndex: 'chinese',
+      dataIndex: 'endDate',
       sorter: {
         compare: (a, b) => a.chinese - b.chinese,
       },
     },
     {
       title: 'Checked',
-      dataIndex: 'math',
+      dataIndex: 'checked',
       sorter: {
         compare: (a, b) => a.math - b.math,
       },
