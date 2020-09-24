@@ -8,7 +8,7 @@ const ParseJsonIntoTaskCheck = (task) => {
   console.log(task);
   if (typeof task === 'string') return task;
   return (
-    <div>kek</div>
+    <div>{JSON.stringify(task)}</div>
   );
 };
 
@@ -22,9 +22,10 @@ const RequestsPage = ({ user }) => {
   const [reviewRequest, setReviewRequest] = useState([]);
 
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
-  const [currentDate] = useState('2020-10-07'); // replace with new Date and format to yyyy-mm-dd later somehow
+  const [currentDate] = useState('2020-07-10'); // replace with new Date and format to yyyy-mm-dd later somehow
 
   console.log(user);
+
   const userFromDB = 'Ulises_Johns82'; // replace with user later
 
   useEffect(() => {
@@ -36,12 +37,12 @@ const RequestsPage = ({ user }) => {
         },
       });
       const fetchedData = await res.json();
-      setUsers(fetchedData.users);
-      setDisputes(fetchedData.disputes);
-      setReviews(fetchedData.reviews);
-      setTasks(fetchedData.tasks);
-      setCrossCheckSessions(fetchedData['cross-check-sessions']);
-      setReviewRequest(fetchedData['review-request']);
+      setUsers(fetchedData?.users);
+      setDisputes(fetchedData?.disputes);
+      setReviews(fetchedData?.reviews);
+      setTasks(fetchedData?.tasks);
+      setCrossCheckSessions(fetchedData?.['cross-check-sessions']);
+      setReviewRequest(fetchedData?.['review-request']);
 
       console.log(
         users,
@@ -60,7 +61,7 @@ const RequestsPage = ({ user }) => {
       title: 'Task',
       dataIndex: 'name',
       sorter: {
-        compare: (a, b) => a.name - b.name,
+        compare: (a, b) => a.name > b.name,
       },
     },
     {
@@ -86,98 +87,131 @@ const RequestsPage = ({ user }) => {
     },
   ];
 
-  const data1 = [
-    {
-      key: '1',
-      name: 'John Brown',
-      chinese: 98,
-      math: 60,
-      english: 70,
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      chinese: 98,
-      math: 66,
-      english: 89,
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      chinese: 98,
-      math: 90,
-      english: 70,
-    },
-    {
-      key: '4',
-      name: 'Jim Red',
-      chinese: 88,
-      math: 99,
-      english: 89,
-    },
-    {
-      key: '5',
-      name: 'John Brown',
-      chinese: 98,
-      math: 60,
-      english: 70,
-    },
-    {
-      key: '6',
-      name: 'Jim Green',
-      chinese: 98,
-      math: 66,
-      english: 89,
-    },
-    {
-      key: '7',
-      name: 'Joe Black',
-      chinese: 98,
-      math: 90,
-      english: 70,
-    },
-    {
-      key: '8',
-      name: 'Jim Red',
-      chinese: 88,
-      math: 99,
-      english: 89,
-    },
-    {
-      key: '9',
-      name: 'John Brown',
-      chinese: 98,
-      math: 60,
-      english: 70,
-    },
-    {
-      key: '10',
-      name: 'Jim Green',
-      chinese: 98,
-      math: 66,
-      english: 89,
-    },
-    {
-      key: '11',
-      name: 'Joe Black',
-      chinese: 98,
-      math: 90,
-      english: 70,
-    },
-    {
-      key: '12',
-      name: 'Jim Red',
-      chinese: 88,
-      math: 99,
-      english: 89,
-    },
-  ];
+  const generateFirstTableData = () => {
+    const res = [];
+    let key = '0';
+    const filteredCrossCheckSessions = crossCheckSessions
+      .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
+       && new Date(currentDate) <= new Date(endDate));
+    filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
+      const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
+      const { reviewerOf } = findUserCrossCheck;
+      const findTask = tasks.find(({ id }) => taskId === id);
+      const { name } = findTask;
+      reviewerOf.forEach(({ id }) => {
+        res.push({
+          key: String(+key + 1),
+          name,
+          id,
+          endDate,
+          checked: false, // make it true when graded a task somehow
+        });
+        key = String(+key + 1);
+      });
+    });
+    console.log(res);
+    return res;
+  };
+  generateFirstTableData();
+
+  const generateSecondTableData = () => {
+
+  };
+  const data1 = generateFirstTableData();
+
+  // const data1 = [
+  //   {
+  //     key: '1',
+  //     name: 'John Brown',
+  //     chinese: 98,
+  //     math: 60,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '2',
+  //     name: 'Jim Green',
+  //     chinese: 98,
+  //     math: 66,
+  //     english: 89,
+  //   },
+  //   {
+  //     key: '3',
+  //     name: 'Joe Black',
+  //     chinese: 98,
+  //     math: 90,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '4',
+  //     name: 'Jim Red',
+  //     chinese: 88,
+  //     math: 99,
+  //     english: 89,
+  //   },
+  //   {
+  //     key: '5',
+  //     name: 'John Brown',
+  //     chinese: 98,
+  //     math: 60,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '6',
+  //     name: 'Jim Green',
+  //     chinese: 98,
+  //     math: 66,
+  //     english: 89,
+  //   },
+  //   {
+  //     key: '7',
+  //     name: 'Joe Black',
+  //     chinese: 98,
+  //     math: 90,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '8',
+  //     name: 'Jim Red',
+  //     chinese: 88,
+  //     math: 99,
+  //     english: 89,
+  //   },
+  //   {
+  //     key: '9',
+  //     name: 'John Brown',
+  //     chinese: 98,
+  //     math: 60,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '10',
+  //     name: 'Jim Green',
+  //     chinese: 98,
+  //     math: 66,
+  //     english: 89,
+  //   },
+  //   {
+  //     key: '11',
+  //     name: 'Joe Black',
+  //     chinese: 98,
+  //     math: 90,
+  //     english: 70,
+  //   },
+  //   {
+  //     key: '12',
+  //     name: 'Jim Red',
+  //     chinese: 88,
+  //     math: 99,
+  //     english: 89,
+  //   },
+  // ];
+
   const columns2 = [
     {
       title: 'Task',
       dataIndex: 'name',
       sorter: {
-        compare: (a, b) => a.name - b.name,
+        compare: (a, b) => a.name > b.name,
       },
     },
     {
