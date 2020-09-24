@@ -13,12 +13,20 @@ const ParseJsonIntoTaskCheck = (task) => {
 };
 
 const RequestsPage = ({ user }) => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [disputes, setDisputes] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [crossCheckSessions, setCrossCheckSessions] = useState([]);
+  const [reviewRequest, setReviewRequest] = useState([]);
+
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
   const [currentDate] = useState('2020-10-07'); // replace with new Date and format to yyyy-mm-dd later somehow
 
   console.log(user);
   const userFromDB = 'Ulises_Johns82'; // replace with user later
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch('https://x-check-json-server.herokuapp.com/db', {
@@ -28,8 +36,21 @@ const RequestsPage = ({ user }) => {
         },
       });
       const fetchedData = await res.json();
-      setData(fetchedData);
-      console.log(data);
+      setUsers(fetchedData.users);
+      setDisputes(fetchedData.disputes);
+      setReviews(fetchedData.reviews);
+      setTasks(fetchedData.tasks);
+      setCrossCheckSessions(fetchedData['cross-check-sessions']);
+      setReviewRequest(fetchedData['review-request']);
+
+      console.log(
+        users,
+        disputes,
+        reviews,
+        tasks,
+        reviewRequest,
+        crossCheckSessions,
+      );
     };
     fetchData();
   }, []);
