@@ -3,27 +3,82 @@ import {
   Input, Button, Row, Col, Radio, Menu, Dropdown,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { data } from './Data';
+// import { data } from './Data';
+import './editPage.scss';
 
 const { TextArea } = Input;
 
 export class EditCheckingList extends React.Component {
     state = {
-      numOfTask: '',
+      taskId: '',
       markdown: '',
       valueTaskTitle: '',
       valueAuthor: '',
       valueState: '',
       view: '',
+      data: [],
     };
 
-    editTask = (task, number) => {
+    getTasks = () => {
+      fetch('https://x-check-json-server.herokuapp.com/tasks', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          console.log('+++++++++++++++++', result);
+          this.setState({ data: result });
+        })
+        .catch((err) => console.log('---------------', err));
+
+      // Response: {roles: Array(2), id: "your-github-name"}
+    }
+
+    saveTask = (task) => {
+      if (this.state.taskId === null) {
+        fetch('https://x-check-json-server.herokuapp.com/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(task),
+        })
+          .then((res) => res.json())
+          .then((result) => {
+            console.log('/////////////////', result);
+            this.getTasks();
+          })
+          .catch((err) => console.log(err));
+      } else {
+        fetch(`https://x-check-json-server.herokuapp.com/tasks/${this.state.taskId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(task),
+        })
+          .then((res) => res.json())
+          .then((result) => {
+            console.log('/////////////////', result);
+            this.getTasks();
+          })
+          .catch((err) => console.log(err));
+      }
+    }
+
+    componentDidMount() {
+      this.getTasks();
+    }
+
+    editTask = (task) => {
       this.setState({
         markdown: this.createMarkdown(task),
-        valueAuthor: task.author,
-        valueTaskTitle: task.title,
+        valueAuthor: task.userId,
+        valueTaskTitle: task.name,
         valueState: task.state,
-        numOfTask: number,
+        taskId: task.id,
         view: '',
       });
     }
@@ -37,7 +92,7 @@ export class EditCheckingList extends React.Component {
         valueAuthor: '',
         valueTaskTitle: '',
         valueState: 'DRAFT',
-        numOfTask: 'new',
+        taskId: null,
         view: '',
       });
     }
@@ -69,32 +124,36 @@ export class EditCheckingList extends React.Component {
           ? 0 : +it.match(/[\+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, '').replace('+', ''),
         minScore: it.match(/[\+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, '').search(/\-/) === -1
           ? 0 : +it.match(/[\+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, ''),
-        id: `${it.replace(/[\+\s*\n\-\d]*$/, '').replace(/\.$/g, '')}-${number}${num}`,
+        name: `${it.replace(/[\+\s*\n\-\d]*$/, '').replace(/\.$/g, '')}-${number}${num}`,
         category: arrCategories[number],
+        description: '',
       })));
 
       const flatArr = arrObj.flat(2);
 
       return {
-        id: `${this.state.valueTaskTitle}-v1`,
-        title: this.state.valueTaskTitle,
-        author: this.state.valueAuthor,
+        // id: this.state.numOfTask === 'new' ? this.state.data.length : +this.state.numOfTask,
+        name: this.state.valueTaskTitle,
+        userId: this.state.valueAuthor,
         state: this.state.valueState,
         categoriesOrder: arrCategories,
         items: flatArr,
       };
     }
 
-    insertTask = (task) => {
-      const result = data;
-      if (this.state.numOfTask === 'new') {
-        result.push(task);
-        console.log('>>>>', result);
-      } else {
-        result[this.state.numOfTask] = task;
-        console.log('--->', result);
-      }
-    }
+    // insertTask = (task) => {
+    //   const result = this.state.data;
+    //   if (this.state.numOfTask === 'new') {
+    //     result.push(task);
+    //     this.setState({ data: result });
+    //     return result;
+    //     console.log('>>>>', result);
+    //   }
+    //   result[this.state.numOfTask] = task;
+    //   this.setState({ data: result });
+    //   console.log('--->', result);
+    //   return result;
+    // }
 
     generateView = () => {
       const task = this.createTaskFromMarkdown(this.state.markdown);
@@ -137,7 +196,7 @@ export class EditCheckingList extends React.Component {
     render() {
       console.log(this.state.markdown);
       const {
-        markdown, view, valueTaskTitle, valueAuthor, valueState, numOfTask,
+        markdown, view, valueTaskTitle, valueAuthor, valueState, taskId, data,
       } = this.state;
 
       const menu = (
@@ -146,7 +205,7 @@ export class EditCheckingList extends React.Component {
                     data.map((item, number) => (
                       <Menu.Item>
                         <span onClick={() => this.editTask(item, number)}>
-                          {item.title}
+                          {item.name}
                         </span>
                       </Menu.Item>
                     ))
@@ -160,7 +219,7 @@ export class EditCheckingList extends React.Component {
       const options = ['DRAFT', 'PUBLISHED', 'ARCHIVED'];
 
       return (
-        <div className="edit-task">
+        <div className="edit-task-wrapper">
           <Dropdown overlay={menu}>
             <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
               Выбор таска
@@ -168,7 +227,7 @@ export class EditCheckingList extends React.Component {
               <DownOutlined />
             </a>
           </Dropdown>
-          {numOfTask.length !== 0
+          {(taskId === null || taskId.length !== 0)
                 && (
                 <>
                   <div>
@@ -220,11 +279,13 @@ export class EditCheckingList extends React.Component {
                   </Button>
                   <Button
                     className="edit-button"
-                    disabled={markdown.length === 0}
+                    disabled={markdown.length === 0 || valueTaskTitle.length === 0 || valueAuthor.length === 0}
                     onClick={() => {
-                      this.insertTask(this.createTaskFromMarkdown(markdown));
+                      const task = this.createTaskFromMarkdown(markdown);
+                      console.log('task-------', task);
+                      this.saveTask(task);
                       this.setState({
-                        numOfTask: '',
+                        taskId: '',
                         valueTaskTitle: '',
                         valueAuthor: '',
                         valueState: '',
