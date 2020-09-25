@@ -212,6 +212,17 @@ export default class EditCheckingList extends React.Component {
 
       const menu = (
         <Menu>
+          <Menu.Item
+            key="danger"
+            danger
+          >
+            <span
+              key="dangerSpan"
+              onClick={() => this.newTask()}
+            >
+              Создать новый таск
+            </span>
+          </Menu.Item>
           {
                     data.map((item, number) => (
                       <Menu.Item key={item + number}>
@@ -224,17 +235,6 @@ export default class EditCheckingList extends React.Component {
                       </Menu.Item>
                     ))
                 }
-          <Menu.Item
-            key="danger"
-            danger
-          >
-            <span
-              key="dangerSpan"
-              onClick={() => this.newTask()}
-            >
-              Создать новый таск
-            </span>
-          </Menu.Item>
         </Menu>
       );
 
