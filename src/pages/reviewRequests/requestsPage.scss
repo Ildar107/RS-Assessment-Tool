@@ -7,6 +7,7 @@
     height: 600px;
     border: 1px solid #1112;
     margin-left: 10px;
+    overflow: overlay;
   }
   .task-request-wrapper {
     width: 400px;
@@ -14,7 +15,8 @@
     border: 1px solid #1112;
     margin-left: 10px;
   }
-  .task-review-header, .task-request-header {
+  .task-review-header,
+  .task-request-header {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -22,7 +24,8 @@
     border: 1px solid #1112;
     width: 100%;
   }
-  .task-review-main, .task-request-main {
+  .task-review-main,
+  .task-request-main {
     padding: 20px;
   }
   h3 {

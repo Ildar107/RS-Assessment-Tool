@@ -7,15 +7,12 @@ import './requestsPage.scss';
 const { Option } = Select;
 
 const ParseJsonIntoTaskCheck = (task) => {
-  console.log(task);
   if (typeof task === 'string') return task;
 
-  const { categoriesOrder, items } = task;
-  // const headers = categoriesOrder
-  const basicItems = items.filter(({ name }) => name.startsWith('basic'));
-  const extraItems = items.filter(({ name }) => name.startsWith('extra'));
-  const finesItems = items.filter(({ name }) => name.startsWith('fines'));
-  console.log(basicItems);
+  const { items } = task;
+  const basicItems = items.filter(({ category }) => category === 'Basic Scope');
+  const extraItems = items.filter(({ category }) => category === 'Extra Scope');
+  const finesItems = items.filter(({ category }) => category === 'Fines');
   const basicScope = (
     <div>
       <h3>Basic Scope</h3>
@@ -91,8 +88,6 @@ const RequestsPage = ({ user }) => {
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
   const [currentDate] = useState('2020-07-10'); // replace with new Date and format to yyyy-mm-dd later somehow
 
-  console.log(user);
-
   const userFromDB = 'Ulises_Johns82'; // replace with user later
 
   useEffect(() => {
@@ -110,15 +105,6 @@ const RequestsPage = ({ user }) => {
       setTasks(fetchedData?.tasks);
       setCrossCheckSessions(fetchedData?.['cross-check-sessions']);
       setReviewRequest(fetchedData?.['review-request']);
-
-      console.log(
-        users,
-        disputes,
-        reviews,
-        tasks,
-        reviewRequest,
-        crossCheckSessions,
-      );
     };
     fetchData();
   }, []);
@@ -140,7 +126,7 @@ const RequestsPage = ({ user }) => {
           name,
           id,
           endDate,
-          checked: String(false), // make it true when graded a task somehow
+          checked: 'no', // make it yes when graded a task somehow
           categoriesOrder,
           items,
         });
@@ -152,10 +138,36 @@ const RequestsPage = ({ user }) => {
   };
 
   const generateSecondTableData = () => {
-
+    const res = [];
+    let key = '0';
+    const filteredCrossCheckSessions = crossCheckSessions
+      .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
+       && new Date(currentDate) <= new Date(endDate));
+    filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
+      const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
+      const { reviewerOf } = findUserCrossCheck;
+      const findTask = tasks.find(({ id }) => taskId === id);
+      const { name, categoriesOrder, items } = findTask;
+      reviewerOf.forEach(({ id }) => {
+        res.push({
+          key: String(+key + 1),
+          name,
+          id,
+          endDate,
+          checked: 'no', // make it yes when graded a task somehow
+          categoriesOrder,
+          items,
+        });
+        key = String(+key + 1);
+      });
+    });
+    console.log(res);
+    return res;
   };
 
   const data1 = generateFirstTableData();
+
+  const data2 = generateSecondTableData();
 
   const columns1 = [
     {
@@ -183,114 +195,25 @@ const RequestsPage = ({ user }) => {
       sortDirections: ['descend', 'ascend'],
     },
   ];
-  // const data1 = [
-  //   {
-  //     key: '1',
-  //     name: 'John Brown',
-  //     chinese: 98,
-  //     math: 60,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '2',
-  //     name: 'Jim Green',
-  //     chinese: 98,
-  //     math: 66,
-  //     english: 89,
-  //   },
-  //   {
-  //     key: '3',
-  //     name: 'Joe Black',
-  //     chinese: 98,
-  //     math: 90,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '4',
-  //     name: 'Jim Red',
-  //     chinese: 88,
-  //     math: 99,
-  //     english: 89,
-  //   },
-  //   {
-  //     key: '5',
-  //     name: 'John Brown',
-  //     chinese: 98,
-  //     math: 60,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '6',
-  //     name: 'Jim Green',
-  //     chinese: 98,
-  //     math: 66,
-  //     english: 89,
-  //   },
-  //   {
-  //     key: '7',
-  //     name: 'Joe Black',
-  //     chinese: 98,
-  //     math: 90,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '8',
-  //     name: 'Jim Red',
-  //     chinese: 88,
-  //     math: 99,
-  //     english: 89,
-  //   },
-  //   {
-  //     key: '9',
-  //     name: 'John Brown',
-  //     chinese: 98,
-  //     math: 60,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '10',
-  //     name: 'Jim Green',
-  //     chinese: 98,
-  //     math: 66,
-  //     english: 89,
-  //   },
-  //   {
-  //     key: '11',
-  //     name: 'Joe Black',
-  //     chinese: 98,
-  //     math: 90,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '12',
-  //     name: 'Jim Red',
-  //     chinese: 88,
-  //     math: 99,
-  //     english: 89,
-  //   },
-  // ];
 
   const columns2 = [
     {
       title: 'Task',
       dataIndex: 'name',
-      sorter: {
-        compare: (a, b) => a.name - b.name,
-      },
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Deadline',
       dataIndex: 'endDate',
-      sorter: {
-        compare: (a, b) => a.chinese - b.chinese,
-      },
+      sorter: (a, b) => a.endDate.length - b.endDate.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Checked',
       dataIndex: 'checked',
-      sorter: {
-        compare: (a, b) => a.math - b.math,
-      },
+      sorter: (a, b) => a.checked.length - b.checked.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Score',
@@ -300,37 +223,6 @@ const RequestsPage = ({ user }) => {
       },
     },
   ];
-  const data2 = '';
-  // const data2 = [
-  //   {
-  //     key: '1',
-  //     name: 'John Brown',
-  //     chinese: 98,
-  //     math: 60,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '2',
-  //     name: 'Jim Green',
-  //     chinese: 98,
-  //     math: 66,
-  //     english: 89,
-  //   },
-  //   {
-  //     key: '3',
-  //     name: 'Joe Black',
-  //     chinese: 98,
-  //     math: 90,
-  //     english: 70,
-  //   },
-  //   {
-  //     key: '4',
-  //     name: 'Jim Red',
-  //     chinese: 88,
-  //     math: 99,
-  //     english: 89,
-  //   },
-  // ];
 
   return (
     <div className="request-page-wrapper">
@@ -338,7 +230,7 @@ const RequestsPage = ({ user }) => {
         <Table
           columns={columns1}
           dataSource={data1}
-          style={{ width: 350 }}
+          style={{ width: 400 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Tasks for review'}
           bordered
@@ -349,7 +241,7 @@ const RequestsPage = ({ user }) => {
         <Table
           columns={columns2}
           dataSource={data2}
-          style={{ width: 350 }}
+          style={{ width: 400 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Selfchecking'}
           bordered
