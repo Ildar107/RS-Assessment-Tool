@@ -7,14 +7,13 @@ import './requestsPage.scss';
 const { Option } = Select;
 
 const RequestsPage = ({ user }) => {
-  // const [data, setData] = useState([]);
   const [users, setUsers] = useState([]);
   const [disputes, setDisputes] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [crossCheckSessions, setCrossCheckSessions] = useState([]);
   const [reviewRequest, setReviewRequest] = useState([]);
-  const [visible, setVisible] = useState(false); // for modal
+  const [visible, setVisible] = useState(false);
 
   const [basicScore, setBasicScore] = useState([]);
   const [extraScore, setExtraScore] = useState([]);
@@ -27,9 +26,9 @@ const RequestsPage = ({ user }) => {
   const [score, setScore] = useState(0);
 
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
-  const [currentDate] = useState('2020-07-10'); // replace with new Date and format to yyyy-mm-dd later somehow
+  const [currentDate] = useState('2020-07-10'); // replace with new Date for current date and format to yyyy-mm-dd later somehow
 
-  const userFromDB = 'Ulises_Johns82'; // replace with user later
+  const userFromDB = 'Ulises_Johns82'; // replace with user later, placeholder user for now
 
   useEffect(() => {
     const fetchData = async () => {
@@ -330,8 +329,20 @@ const RequestsPage = ({ user }) => {
             {' '}
             {score}
           </span>
-          <Button>Save</Button>
-          <Button>Cancel</Button>
+          <Button type="primary">Save</Button>
+          <Button onClick={() => {
+            setCurrentTask('Choose a task from one of the left tables');
+            setBasicScore([]);
+            setExtraScore([]);
+            setFinesScore([]);
+            setBasicTotal(0);
+            setExtraTotal(0);
+            setFinesTotal(0);
+            setScore(0);
+          }}
+          >
+            Cancel
+          </Button>
         </header>
         <main className="task-review-main">
           {ParseJsonIntoTaskCheck(currentTask)}
