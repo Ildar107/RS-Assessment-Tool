@@ -96,15 +96,14 @@ const RequestsPage = ({ user }) => {
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
-                  setExtraScore((state) => {
-                    const copy = [...state];
-                    copy.splice(index, 1, target.value);
-                    return copy;
-                  });
-                  setExtraTotal(extraScore.reduce(
+                  const newExtraScore = [...extraScore];
+                  newExtraScore.splice(index, 1, target.value);
+                  setExtraScore(newExtraScore);
+                  const newExtraScoreTotal = newExtraScore.reduce(
                     (accum, value) => accum + value, 0,
-                  ));
-                  setScore(basicTotal + extraTotal + finesTotal);
+                  );
+                  setExtraTotal(newExtraScoreTotal);
+                  setScore(basicTotal + newExtraScoreTotal + finesTotal);
                 }}
                 value={extraScore[index]}
               >
@@ -126,15 +125,14 @@ const RequestsPage = ({ user }) => {
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
-                  setFinesScore((state) => {
-                    const copy = [...state];
-                    copy.splice(index, 1, target.value);
-                    return copy;
-                  });
-                  setFinesTotal(finesScore.reduce(
+                  const newFinesScore = [...finesScore];
+                  newFinesScore.splice(index, 1, target.value);
+                  setFinesScore(newFinesScore);
+                  const newFinesScoreTotal = newFinesScore.reduce(
                     (accum, value) => accum + value, 0,
-                  ));
-                  setScore(basicTotal + extraTotal + finesTotal);
+                  );
+                  setFinesTotal(newFinesScoreTotal);
+                  setScore(basicTotal + extraTotal + newFinesScoreTotal);
                 }}
                 value={finesScore[index]}
               >
@@ -273,7 +271,6 @@ const RequestsPage = ({ user }) => {
       },
     },
   ];
-  console.log(basicScore);
   return (
     <div className="request-page-wrapper">
       <div className="table-wrapper">
