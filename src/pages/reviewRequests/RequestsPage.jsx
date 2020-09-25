@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Table, Button, Select, Radio,
+  Table, Button, Select, Radio, Modal,
 } from 'antd';
 import './requestsPage.scss';
 
@@ -17,8 +17,8 @@ const ParseJsonIntoTaskCheck = (task) => {
     <div>
       <h3>Basic Scope</h3>
       <ul>
-        {basicItems.map(({ minScore, maxScore, title }) => (
-          <li style={{ listStyle: 'none' }}>
+        {basicItems.map(({ minScore, maxScore, title }, index) => (
+          <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
             <h5>{title}</h5>
             <Radio.Group onChange={() => {}} value={0}>
               <Radio value={minScore}>Не выполнено</Radio>
@@ -34,8 +34,8 @@ const ParseJsonIntoTaskCheck = (task) => {
     <div>
       <h3>Extra Scope</h3>
       <ul>
-        {extraItems.map(({ minScore, maxScore, title }) => (
-          <li style={{ listStyle: 'none' }}>
+        {extraItems.map(({ minScore, maxScore, title }, index) => (
+          <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
             <h5>{title}</h5>
             <Radio.Group onChange={() => {}} value={0}>
               <Radio value={minScore}>Не выполнено</Radio>
@@ -51,8 +51,8 @@ const ParseJsonIntoTaskCheck = (task) => {
     <div>
       <h3>Fines</h3>
       <ul>
-        {finesItems.map(({ minScore, maxScore, title }) => (
-          <li style={{ listStyle: 'none' }}>
+        {finesItems.map(({ minScore, maxScore, title }, index) => (
+          <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
             <h5>{title}</h5>
             <Radio.Group onChange={() => {}} value={0}>
               <Radio value={minScore}>Не выполнено</Radio>
@@ -84,6 +84,7 @@ const RequestsPage = ({ user }) => {
   const [tasks, setTasks] = useState([]);
   const [crossCheckSessions, setCrossCheckSessions] = useState([]);
   const [reviewRequest, setReviewRequest] = useState([]);
+  const [visible, setVisible] = useState(false); // for modal
 
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
   const [currentDate] = useState('2020-07-10'); // replace with new Date and format to yyyy-mm-dd later somehow
@@ -230,7 +231,7 @@ const RequestsPage = ({ user }) => {
         <Table
           columns={columns1}
           dataSource={data1}
-          style={{ width: 400 }}
+          style={{ width: 650 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Tasks for review'}
           bordered
@@ -241,7 +242,7 @@ const RequestsPage = ({ user }) => {
         <Table
           columns={columns2}
           dataSource={data2}
-          style={{ width: 400 }}
+          style={{ width: 650 }}
           pagination={{ defaultPageSize: 5 }}
           title={() => 'Selfchecking'}
           bordered
@@ -249,7 +250,7 @@ const RequestsPage = ({ user }) => {
           tableLayout="fixed"
           onRow={(record) => ({ onClick: () => setCurrentTask(record) })}
         />
-        <Button>New Task Request</Button>
+        <Button type="primary" onClick={() => setVisible(true)}>New Task Request</Button>
         <Button>Check Task</Button>
       </div>
 
@@ -265,7 +266,7 @@ const RequestsPage = ({ user }) => {
         </main>
       </div>
 
-      <div className="task-request-wrapper">
+      {/* <div className="task-request-wrapper">
         <header className="task-request-header">
           <h3>Task request</h3>
           <Button>Save</Button>
@@ -287,7 +288,32 @@ const RequestsPage = ({ user }) => {
             <Select style={{ width: 110 }} />
           </div>
         </main>
-      </div>
+      </div> */}
+      <Modal
+        title="New Task Request"
+        visible={visible}
+        onOk={(e) => {
+          console.log(e);
+          // some async actions, save to db?
+          setVisible(false);
+        }}
+        onCancel={() => setVisible(false)}
+      >
+        <div>
+          <span>
+            Task Name:
+            {' '}
+          </span>
+          <Select style={{ width: 110 }} />
+        </div>
+        <div>
+          <span>
+            Pull Request:
+            {' '}
+          </span>
+          <Select style={{ width: 110 }} />
+        </div>
+      </Modal>
     </div>
   );
 };
