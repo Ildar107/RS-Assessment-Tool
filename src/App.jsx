@@ -8,7 +8,7 @@ import routes from './constants/routes';
 import MainPage from './pages/home/MainPage';
 import AuthPage from './pages/authentication/AuthPage';
 import PrivateRoute from './components/PrivateRoute';
-import { EditCheckingList } from './pages/edit/EditCheckingList';
+import EditCheckingList from './pages/edit/EditCheckingList';
 
 // const Tasks = <h1>TASKS</h1>;
 const App = () => {
