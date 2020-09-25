@@ -6,76 +6,6 @@ import './requestsPage.scss';
 
 const { Option } = Select;
 
-const ParseJsonIntoTaskCheck = (task) => {
-  if (typeof task === 'string') return task;
-
-  const { items } = task;
-  const basicItems = items.filter(({ category }) => category === 'Basic Scope');
-  const extraItems = items.filter(({ category }) => category === 'Extra Scope');
-  const finesItems = items.filter(({ category }) => category === 'Fines');
-  const basicScope = (
-    <div>
-      <h3>Basic Scope</h3>
-      <ul>
-        {basicItems.map(({ minScore, maxScore, title }, index) => (
-          <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
-            <h5>{title}</h5>
-            <Radio.Group onChange={() => {}} value={0}>
-              <Radio value={minScore}>Не выполнено</Radio>
-              <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
-              <Radio value={maxScore}>Выполнено полностью</Radio>
-            </Radio.Group>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-  const extraScope = (
-    <div>
-      <h3>Extra Scope</h3>
-      <ul>
-        {extraItems.map(({ minScore, maxScore, title }, index) => (
-          <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
-            <h5>{title}</h5>
-            <Radio.Group onChange={() => {}} value={0}>
-              <Radio value={minScore}>Не выполнено</Radio>
-              <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
-              <Radio value={maxScore}>Выполнено полностью</Radio>
-            </Radio.Group>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-  const fines = (
-    <div>
-      <h3>Fines</h3>
-      <ul>
-        {finesItems.map(({ minScore, maxScore, title }, index) => (
-          <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
-            <h5>{title}</h5>
-            <Radio.Group onChange={() => {}} value={0}>
-              <Radio value={minScore}>Не выполнено</Radio>
-              <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
-              <Radio value={maxScore}>Выполнено полностью</Radio>
-            </Radio.Group>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-
-  return (
-    <div>
-      {basicScope}
-      <br />
-      {extraScope}
-      <br />
-      {fines}
-    </div>
-  );
-};
-
 const RequestsPage = ({ user }) => {
   // const [data, setData] = useState([]);
   const [users, setUsers] = useState([]);
@@ -85,6 +15,16 @@ const RequestsPage = ({ user }) => {
   const [crossCheckSessions, setCrossCheckSessions] = useState([]);
   const [reviewRequest, setReviewRequest] = useState([]);
   const [visible, setVisible] = useState(false); // for modal
+
+  const [basicScore, setBasicScore] = useState([]);
+  const [extraScore, setExtraScore] = useState([]);
+  const [finesScore, setFinesScore] = useState([]);
+
+  const [basicTotal, setBasicTotal] = useState(0);
+  const [extraTotal, setExtraTotal] = useState(0);
+  const [finesTotal, setFinesTotal] = useState(0);
+
+  const [score, setScore] = useState(0);
 
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
   const [currentDate] = useState('2020-07-10'); // replace with new Date and format to yyyy-mm-dd later somehow
@@ -110,6 +50,116 @@ const RequestsPage = ({ user }) => {
     fetchData();
   }, []);
 
+  const ParseJsonIntoTaskCheck = (task) => {
+    if (typeof task === 'string') return task;
+
+    const { items } = task;
+    const basicItems = items.filter(({ category }) => category === 'Basic Scope');
+    const extraItems = items.filter(({ category }) => category === 'Extra Scope');
+    const finesItems = items.filter(({ category }) => category === 'Fines');
+
+    const basicScope = (
+      <div>
+        <h3>Basic Scope</h3>
+        <ul>
+          {basicItems.map(({ minScore, maxScore, title }, index) => (
+            <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              <h5>{title}</h5>
+              <Radio.Group
+                onChange={({ target }) => {
+                  setBasicScore((state) => {
+                    const copy = [...state];
+                    copy.splice(index, 1, target.value);
+                    return copy;
+                  });
+                  setBasicTotal(basicScore.reduce(
+                    (accum, value) => accum + value, 0,
+                  ));
+                  setScore(basicTotal + extraTotal + finesTotal);
+                }}
+                value={basicScore[index]}
+              >
+                <Radio value={minScore}>Не выполнено</Radio>
+                <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
+                <Radio value={maxScore}>Выполнено полностью</Radio>
+              </Radio.Group>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+    const extraScope = (
+      <div>
+        <h3>Extra Scope</h3>
+        <ul>
+          {extraItems.map(({ minScore, maxScore, title }, index) => (
+            <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              <h5>{title}</h5>
+              <Radio.Group
+                onChange={({ target }) => {
+                  setExtraScore((state) => {
+                    const copy = [...state];
+                    copy.splice(index, 1, target.value);
+                    return copy;
+                  });
+                  setExtraTotal(extraScore.reduce(
+                    (accum, value) => accum + value, 0,
+                  ));
+                  setScore(basicTotal + extraTotal + finesTotal);
+                }}
+                value={extraScore[index]}
+              >
+                <Radio value={minScore}>Не выполнено</Radio>
+                <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
+                <Radio value={maxScore}>Выполнено полностью</Radio>
+              </Radio.Group>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+    const fines = (
+      <div>
+        <h3>Fines</h3>
+        <ul>
+          {finesItems.map(({ minScore, maxScore, title }, index) => (
+            <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              <h5>{title}</h5>
+              <Radio.Group
+                onChange={({ target }) => {
+                  setFinesScore((state) => {
+                    const copy = [...state];
+                    copy.splice(index, 1, target.value);
+                    return copy;
+                  });
+                  setFinesTotal(finesScore.reduce(
+                    (accum, value) => accum + value, 0,
+                  ));
+                  setScore(basicTotal + extraTotal + finesTotal);
+                }}
+                value={finesScore[index]}
+              >
+                <Radio value={minScore}>Не выполнено</Radio>
+                <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
+                <Radio value={maxScore}>Выполнено полностью</Radio>
+              </Radio.Group>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+
+    return (
+      <div>
+        {basicScope}
+        <br />
+        {extraScope}
+        <br />
+        {fines}
+      </div>
+    );
+  };
+
   const generateFirstTableData = () => {
     const res = [];
     let key = '0';
@@ -134,7 +184,7 @@ const RequestsPage = ({ user }) => {
         key = String(+key + 1);
       });
     });
-    console.log(res);
+    // console.log(res);
     return res;
   };
 
@@ -162,7 +212,7 @@ const RequestsPage = ({ user }) => {
         key = String(+key + 1);
       });
     });
-    console.log(res);
+    // console.log(res);
     return res;
   };
 
@@ -224,7 +274,7 @@ const RequestsPage = ({ user }) => {
       },
     },
   ];
-
+  console.log(basicScore);
   return (
     <div className="request-page-wrapper">
       <div className="table-wrapper">
@@ -257,7 +307,11 @@ const RequestsPage = ({ user }) => {
       <div className="task-review-wrapper">
         <header className="task-review-header">
           <h3>Task Review</h3>
-          <span>Score: 69</span>
+          <span>
+            Score:
+            {' '}
+            {score}
+          </span>
           <Button>Save</Button>
           <Button>Cancel</Button>
         </header>
