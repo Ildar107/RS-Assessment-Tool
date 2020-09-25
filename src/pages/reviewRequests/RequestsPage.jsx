@@ -287,7 +287,18 @@ const RequestsPage = ({ user }) => {
           bordered
           size="small"
           tableLayout="fixed"
-          onRow={(record) => ({ onClick: () => setCurrentTask(record) })}
+          onRow={(record) => ({
+            onClick: () => {
+              setCurrentTask(record);
+              setBasicScore([]);
+              setExtraScore([]);
+              setFinesScore([]);
+              setBasicTotal(0);
+              setExtraTotal(0);
+              setFinesTotal(0);
+              setScore(0);
+            },
+          })}
         />
         <Table
           columns={columns2}
@@ -298,7 +309,18 @@ const RequestsPage = ({ user }) => {
           bordered
           size="small"
           tableLayout="fixed"
-          onRow={(record) => ({ onClick: () => setCurrentTask(record) })}
+          onRow={(record) => ({
+            onClick: () => {
+              setCurrentTask(record);
+              setBasicScore([]);
+              setExtraScore([]);
+              setFinesScore([]);
+              setBasicTotal(0);
+              setExtraTotal(0);
+              setFinesTotal(0);
+              setScore(0);
+            },
+          })}
         />
         <Button type="primary" onClick={() => setVisible(true)}>New Task Request</Button>
         <Button>Check Task</Button>
@@ -319,30 +341,6 @@ const RequestsPage = ({ user }) => {
           {ParseJsonIntoTaskCheck(currentTask)}
         </main>
       </div>
-
-      {/* <div className="task-request-wrapper">
-        <header className="task-request-header">
-          <h3>Task request</h3>
-          <Button>Save</Button>
-          <Button>Cancel</Button>
-        </header>
-        <main className="task-request-main">
-          <div>
-            <span>
-              Task Name:
-              {' '}
-            </span>
-            <Select style={{ width: 110 }} />
-          </div>
-          <div>
-            <span>
-              Pull Request:
-              {' '}
-            </span>
-            <Select style={{ width: 110 }} />
-          </div>
-        </main>
-      </div> */}
       <Modal
         title="New Task Request"
         visible={visible}
