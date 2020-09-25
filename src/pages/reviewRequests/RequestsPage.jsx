@@ -67,15 +67,14 @@ const RequestsPage = ({ user }) => {
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
-                  setBasicScore((state) => {
-                    const copy = [...state];
-                    copy.splice(index, 1, target.value);
-                    return copy;
-                  });
-                  setBasicTotal(basicScore.reduce(
+                  const newBasicScore = [...basicScore];
+                  newBasicScore.splice(index, 1, target.value);
+                  setBasicScore(newBasicScore);
+                  const newBasicScoreTotal = newBasicScore.reduce(
                     (accum, value) => accum + value, 0,
-                  ));
-                  setScore(basicTotal + extraTotal + finesTotal);
+                  );
+                  setBasicTotal(newBasicScoreTotal);
+                  setScore(newBasicScoreTotal + extraTotal + finesTotal);
                 }}
                 value={basicScore[index]}
               >
