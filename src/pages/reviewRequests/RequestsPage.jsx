@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React, { useState, useEffect } from 'react';
 import {
   Table, Button, Select, Radio, Modal,
@@ -31,7 +32,7 @@ const RequestsPage = ({ user }) => {
 
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
 
-  const userFromDB = 'Ulises_Johns82'; // replace with user later, placeholder user for now
+  const userFromDB = 'Maddison_Yost'; // replace with user later, placeholder user for now
   const [keyForTable2, setKeyForTable2] = useState(1);
 
   useEffect(() => {
@@ -47,8 +48,8 @@ const RequestsPage = ({ user }) => {
       setDisputes(fetchedData?.disputes);
       setReviews(fetchedData?.reviews);
       setTasks(fetchedData?.tasks);
-      setCrossCheckSessions(fetchedData?.['cross-check-sessions']);
-      setReviewRequest(fetchedData?.['review-request']);
+      setCrossCheckSessions(fetchedData?.crossCheckSessions);
+      setReviewRequest(fetchedData?.reviewRequest);
     };
     fetchData();
   }, []);
@@ -56,7 +57,7 @@ const RequestsPage = ({ user }) => {
   const ParseJsonIntoTaskCheck = (task) => {
     if (typeof task === 'string') return task;
 
-    const { items, selfGrade } = task;
+    const { items, selfGrade, pullRequest } = task;
     const basicItems = items.filter(({ category }) => category === 'Basic Scope');
     const extraItems = items.filter(({ category }) => category === 'Extra Scope');
     const finesItems = items.filter(({ category }) => category === 'Fines');
@@ -178,6 +179,11 @@ const RequestsPage = ({ user }) => {
 
     return (
       <div>
+        <h4>
+          Pull request :
+          {' '}
+          {pullRequest}
+        </h4>
         {basicScope}
         <br />
         {extraScope}
@@ -190,44 +196,18 @@ const RequestsPage = ({ user }) => {
   const generateFirstTableData = () => {
     const res = [];
     let key = '0';
-    // const filteredCrossCheckSessions = crossCheckSessions
-    //   .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
-    //    && new Date(currentDate) <= new Date(endDate));
-    // filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
-    //   const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
-    //   const { reviewerOf } = findUserCrossCheck;
-
-    //   const { name, categoriesOrder, items } = findTask;
-    //   reviewerOf.forEach(({ id }) => {
-    //     const reviewRequestFind = reviewRequest.find(({ userId }) => id === userId);
-    //     if (!reviewRequestFind) return;
-    //     const { selfGrade } = reviewRequestFind;
-    //     res.push({
-    //       key: String(+key + 1),
-    //       name,
-    //       id,
-    //       endDate,
-    //       checked: 'no', // make it yes when graded a task somehow
-    //       categoriesOrder,
-    //       items,
-    //       selfGrade,
-    //     });
-    //
-    //   });
-    // });
-    // console.log(res);
     const filteredReviewRequests = reviewRequest
       .filter(({ userId, state }) => userFromDB !== userId && state === 'PUBLISHED');
-    filteredReviewRequests.forEach(({ taskId, userId, selfGrade }) => {
+    filteredReviewRequests.forEach(({
+      taskId, userId, selfGrade, pullRequest,
+    }) => {
       const findTask = tasks.find(({ id }) => taskId === id);
       const { name, items } = findTask;
       res.push({
         key: String(+key + 1),
         name,
         id: userId,
-        // endDate,
-        // checked: 'no',
-        // categoriesOrder,
+        pullRequest,
         items,
         selfGrade,
       });
@@ -236,37 +216,7 @@ const RequestsPage = ({ user }) => {
     return res;
   };
 
-  // const generateSecondTableData = () => {
-  //   const res = [];
-  //   let key = '0';
-  //   const filteredCrossCheckSessions = crossCheckSessions
-  //     .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
-  //      && new Date(currentDate) <= new Date(endDate));
-  //   filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
-  //     const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
-  //     const { reviewerOf } = findUserCrossCheck;
-  //     const findTask = tasks.find(({ id }) => taskId === id);
-  //     const { name, categoriesOrder, items } = findTask;
-  //     reviewerOf.forEach(({ id }) => {
-  //       res.push({
-  //         key: String(+key + 1),
-  //         name,
-  //         id,
-  //         endDate,
-  //         checked: 'no', // make it yes when graded a task somehow
-  //         categoriesOrder,
-  //         items,
-  //       });
-  //       key = String(+key + 1);
-  //     });
-  //   });
-  //   // console.log(res);
-  //   return res;
-  // };
-
   const data1 = generateFirstTableData();
-
-  // const data2 = generateSecondTableData();
 
   const columns1 = [
     {
@@ -281,18 +231,12 @@ const RequestsPage = ({ user }) => {
       sorter: (a, b) => a.id.length - b.id.length,
       sortDirections: ['descend', 'ascend'],
     },
-    // {
-    //   title: 'Deadline',
-    //   dataIndex: 'endDate',
-    //   sorter: (a, b) => a.endDate.length - b.endDate.length,
-    //   sortDirections: ['descend', 'ascend'],
-    // },
-    // {
-    //   title: 'Checked',
-    //   dataIndex: 'checked',
-    //   sorter: (a, b) => a.checked.length - b.checked.length,
-    //   sortDirections: ['descend', 'ascend'],
-    // },
+    {
+      title: 'Pull Request',
+      dataIndex: 'pullRequest',
+      sorter: (a, b) => a.pullRequest.length - b.pullRequest.length,
+      sortDirections: ['descend', 'ascend'],
+    },
   ];
 
   const columns2 = [
