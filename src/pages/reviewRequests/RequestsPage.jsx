@@ -326,7 +326,27 @@ const RequestsPage = ({ user }) => {
             {' '}
             {score}
           </span>
-          <Button type="primary">Save</Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              if (typeof currentTask === 'string') return;
+              if (!currentTask.selfGrade) {
+                currentTask.score = score;
+                currentTask.checked = 'yes';
+                // fetch to db here?
+                setCurrentTask('Choose a task from one of the left tables');
+                setBasicScore([]);
+                setExtraScore([]);
+                setFinesScore([]);
+                setBasicTotal(0);
+                setExtraTotal(0);
+                setFinesTotal(0);
+                setScore(0);
+              }
+            }}
+          >
+            Save
+          </Button>
           <Button onClick={() => {
             setCurrentTask('Choose a task from one of the left tables');
             setBasicScore([]);
