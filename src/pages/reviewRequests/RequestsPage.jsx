@@ -331,6 +331,9 @@ const RequestsPage = ({ user }) => {
             onClick: () => {
               console.log(record);
               setCurrentTask(record);
+              setBasicComments([]);
+              setExtraComments([]);
+              setFinesComments([]);
               setBasicScore([]);
               setExtraScore([]);
               setFinesScore([]);
@@ -354,6 +357,9 @@ const RequestsPage = ({ user }) => {
             onClick: () => {
               console.log(record);
               setCurrentTask(record);
+              setBasicComments([]);
+              setExtraComments([]);
+              setFinesComments([]);
               setBasicScore([]);
               setExtraScore([]);
               setFinesScore([]);
@@ -384,6 +390,9 @@ const RequestsPage = ({ user }) => {
                 currentTask.checked = 'yes';
                 // form object and fetch to review request here?
                 setCurrentTask('Choose a task from one of the left tables');
+                setBasicComments([]);
+                setExtraComments([]);
+                setFinesComments([]);
                 setBasicScore([]);
                 setExtraScore([]);
                 setFinesScore([]);
@@ -394,6 +403,9 @@ const RequestsPage = ({ user }) => {
               }
               // form object and fetch to reviews here?
               setCurrentTask('Choose a task from one of the left tables');
+              setBasicComments([]);
+              setExtraComments([]);
+              setFinesComments([]);
               setBasicScore([]);
               setExtraScore([]);
               setFinesScore([]);
@@ -407,6 +419,9 @@ const RequestsPage = ({ user }) => {
           </Button>
           <Button onClick={() => {
             setCurrentTask('Choose a task from one of the left tables');
+            setBasicComments([]);
+            setExtraComments([]);
+            setFinesComments([]);
             setBasicScore([]);
             setExtraScore([]);
             setFinesScore([]);
