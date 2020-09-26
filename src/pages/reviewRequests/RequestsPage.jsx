@@ -99,7 +99,6 @@ const RequestsPage = ({ user }) => {
                 <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
                 <Radio value={maxScore}>Выполнено полностью</Radio>
               </Radio.Group>
-              {!selfGrade && (
               <h4>
                 Leave comment :
                 {' '}
@@ -113,7 +112,6 @@ const RequestsPage = ({ user }) => {
                   })}
                 />
               </h4>
-              )}
             </li>
           ))}
         </ul>
@@ -152,7 +150,6 @@ const RequestsPage = ({ user }) => {
                 <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
                 <Radio value={maxScore}>Выполнено полностью</Radio>
               </Radio.Group>
-              {!selfGrade && (
               <h4>
                 Leave comment :
                 {' '}
@@ -166,7 +163,6 @@ const RequestsPage = ({ user }) => {
                   })}
                 />
               </h4>
-              )}
             </li>
           ))}
         </ul>
@@ -205,7 +201,6 @@ const RequestsPage = ({ user }) => {
                 <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
                 <Radio value={maxScore}>Выполнено полностью</Radio>
               </Radio.Group>
-              {!selfGrade && (
               <h4>
                 Leave comment :
                 {' '}
@@ -219,7 +214,6 @@ const RequestsPage = ({ user }) => {
                   })}
                 />
               </h4>
-              )}
             </li>
           ))}
         </ul>
