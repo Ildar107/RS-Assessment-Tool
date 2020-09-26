@@ -21,6 +21,10 @@ const RequestsPage = ({ user }) => {
   const [extraScore, setExtraScore] = useState([]);
   const [finesScore, setFinesScore] = useState([]);
 
+  const [basicComments, setBasicComments] = useState([]);
+  const [extraComments, setExtraComments] = useState([]);
+  const [finesComments, setFinesComments] = useState([]);
+
   const [basicTotal, setBasicTotal] = useState(0);
   const [extraTotal, setExtraTotal] = useState(0);
   const [finesTotal, setFinesTotal] = useState(0);
@@ -95,6 +99,21 @@ const RequestsPage = ({ user }) => {
                 <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
                 <Radio value={maxScore}>Выполнено полностью</Radio>
               </Radio.Group>
+              {!selfGrade && (
+              <h4>
+                Leave comment :
+                {' '}
+                <input
+                  type="text"
+                  value={basicComments[index]}
+                  onChange={({ target }) => setBasicComments((state) => {
+                    const copy = [...state];
+                    copy.splice(index, 1, target.value);
+                    return copy;
+                  })}
+                />
+              </h4>
+              )}
             </li>
           ))}
         </ul>
@@ -133,6 +152,21 @@ const RequestsPage = ({ user }) => {
                 <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
                 <Radio value={maxScore}>Выполнено полностью</Radio>
               </Radio.Group>
+              {!selfGrade && (
+              <h4>
+                Leave comment :
+                {' '}
+                <input
+                  type="text"
+                  value={extraComments[index]}
+                  onChange={({ target }) => setExtraComments((state) => {
+                    const copy = [...state];
+                    copy.splice(index, 1, target.value);
+                    return copy;
+                  })}
+                />
+              </h4>
+              )}
             </li>
           ))}
         </ul>
@@ -171,6 +205,21 @@ const RequestsPage = ({ user }) => {
                 <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
                 <Radio value={maxScore}>Выполнено полностью</Radio>
               </Radio.Group>
+              {!selfGrade && (
+              <h4>
+                Leave comment :
+                {' '}
+                <input
+                  type="text"
+                  value={finesComments[index]}
+                  onChange={({ target }) => setFinesComments((state) => {
+                    const copy = [...state];
+                    copy.splice(index, 1, target.value);
+                    return copy;
+                  })}
+                />
+              </h4>
+              )}
             </li>
           ))}
         </ul>
