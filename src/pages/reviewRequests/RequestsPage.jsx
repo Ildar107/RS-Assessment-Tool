@@ -27,7 +27,7 @@ const RequestsPage = ({ user }) => {
   const [score, setScore] = useState(0);
 
   const [data2, setData2] = useState([]);
-  const [selectedTask, setSelectedTask] = useState('select a task');
+  const [selectedTask, setSelectedTask] = useState('Select a task');
 
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
   const [currentDate] = useState('2020-07-10'); // replace with new Date for current date and format to yyyy-mm-dd later somehow
@@ -311,9 +311,9 @@ const RequestsPage = ({ user }) => {
     },
     {
       title: 'Score',
-      dataIndex: 'english',
+      dataIndex: 'score',
       sorter: {
-        compare: (a, b) => a.english - b.english,
+        compare: (a, b) => a.score - b.score,
       },
     },
   ];
@@ -399,10 +399,24 @@ const RequestsPage = ({ user }) => {
         visible={visible}
         onOk={(e) => {
           console.log(e);
-          // some async actions, save to db?
+          const newReviewRequestTask = {
+            name: JSON.parse(selectedTask).name,
+            checked: 'no',
+            score: '-',
+            selectedTask: JSON.parse(selectedTask),
+          };
+
+          setData2([...data2, newReviewRequestTask]);
+
+          setSelectedTask('Select a task');
+          setPullRequest('');
           setVisible(false);
         }}
-        onCancel={() => setVisible(false)}
+        onCancel={() => {
+          setSelectedTask('Select a task');
+          setPullRequest('');
+          setVisible(false);
+        }}
       >
         <div>
           <span>
@@ -412,10 +426,10 @@ const RequestsPage = ({ user }) => {
           <Select
             style={{ width: 250 }}
             value={selectedTask}
-            onChange={(value) => setSelectedTask(value)}
+            onChange={setSelectedTask}
           >
-            {tasks.map(({ id, name }) => (
-              <Option value={id}>{name}</Option>
+            {tasks.map((task) => (
+              <Option value={JSON.stringify(task)} key={task.id}>{task.name}</Option>
             ))}
           </Select>
         </div>
