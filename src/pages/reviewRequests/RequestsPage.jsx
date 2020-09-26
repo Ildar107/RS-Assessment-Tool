@@ -26,6 +26,9 @@ const RequestsPage = ({ user }) => {
 
   const [score, setScore] = useState(0);
 
+  const [data2, setData2] = useState([]);
+  const [selectedTask, setSelectedTask] = useState('select a task');
+
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
   const [currentDate] = useState('2020-07-10'); // replace with new Date for current date and format to yyyy-mm-dd later somehow
 
@@ -228,37 +231,37 @@ const RequestsPage = ({ user }) => {
     return res;
   };
 
-  const generateSecondTableData = () => {
-    const res = [];
-    let key = '0';
-    const filteredCrossCheckSessions = crossCheckSessions
-      .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
-       && new Date(currentDate) <= new Date(endDate));
-    filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
-      const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
-      const { reviewerOf } = findUserCrossCheck;
-      const findTask = tasks.find(({ id }) => taskId === id);
-      const { name, categoriesOrder, items } = findTask;
-      reviewerOf.forEach(({ id }) => {
-        res.push({
-          key: String(+key + 1),
-          name,
-          id,
-          endDate,
-          checked: 'no', // make it yes when graded a task somehow
-          categoriesOrder,
-          items,
-        });
-        key = String(+key + 1);
-      });
-    });
-    // console.log(res);
-    return res;
-  };
+  // const generateSecondTableData = () => {
+  //   const res = [];
+  //   let key = '0';
+  //   const filteredCrossCheckSessions = crossCheckSessions
+  //     .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
+  //      && new Date(currentDate) <= new Date(endDate));
+  //   filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
+  //     const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
+  //     const { reviewerOf } = findUserCrossCheck;
+  //     const findTask = tasks.find(({ id }) => taskId === id);
+  //     const { name, categoriesOrder, items } = findTask;
+  //     reviewerOf.forEach(({ id }) => {
+  //       res.push({
+  //         key: String(+key + 1),
+  //         name,
+  //         id,
+  //         endDate,
+  //         checked: 'no', // make it yes when graded a task somehow
+  //         categoriesOrder,
+  //         items,
+  //       });
+  //       key = String(+key + 1);
+  //     });
+  //   });
+  //   // console.log(res);
+  //   return res;
+  // };
 
   const data1 = generateFirstTableData();
 
-  const data2 = generateSecondTableData();
+  // const data2 = generateSecondTableData();
 
   const columns1 = [
     {
@@ -294,12 +297,12 @@ const RequestsPage = ({ user }) => {
       sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['descend', 'ascend'],
     },
-    {
-      title: 'Deadline',
-      dataIndex: 'endDate',
-      sorter: (a, b) => a.endDate.length - b.endDate.length,
-      sortDirections: ['descend', 'ascend'],
-    },
+    // {
+    //   title: 'Deadline',
+    //   dataIndex: 'endDate',
+    //   sorter: (a, b) => a.endDate.length - b.endDate.length,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
     {
       title: 'Checked',
       dataIndex: 'checked',
@@ -406,14 +409,27 @@ const RequestsPage = ({ user }) => {
             Task Name:
             {' '}
           </span>
-          <Select style={{ width: 110 }} />
+          <Select
+            style={{ width: 250 }}
+            value={selectedTask}
+            onChange={(value) => setSelectedTask(value)}
+          >
+            {tasks.map(({ id, name }) => (
+              <Option value={id}>{name}</Option>
+            ))}
+          </Select>
         </div>
         <div>
           <span>
             Pull Request:
             {' '}
           </span>
-          <input type="text" value={pullRequest} onChange={({ target }) => setPullRequest(target.value)} />
+          <input
+            type="text"
+            style={{ width: 250 }}
+            value={pullRequest}
+            onChange={({ target }) => setPullRequest(target.value)}
+          />
         </div>
       </Modal>
     </div>
