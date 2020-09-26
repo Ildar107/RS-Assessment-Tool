@@ -181,7 +181,7 @@ const RequestsPage = ({ user }) => {
 
   const generateFirstTableData = () => {
     const res = [];
-    const key = '0';
+    let key = '0';
     // const filteredCrossCheckSessions = crossCheckSessions
     //   .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
     //    && new Date(currentDate) <= new Date(endDate));
@@ -204,7 +204,7 @@ const RequestsPage = ({ user }) => {
     //       items,
     //       selfGrade,
     //     });
-    //     key = String(+key + 1);
+    //
     //   });
     // });
     // console.log(res);
@@ -212,7 +212,7 @@ const RequestsPage = ({ user }) => {
       .filter(({ userId, state }) => userFromDB !== userId && state === 'PUBLISHED');
     filteredReviewRequests.forEach(({ taskId, userId, selfGrade }) => {
       const findTask = tasks.find(({ id }) => taskId === id);
-      const { name } = findTask;
+      const { name, items } = findTask;
       res.push({
         key: String(+key + 1),
         name,
@@ -220,9 +220,10 @@ const RequestsPage = ({ user }) => {
         // endDate,
         // checked: 'no',
         // categoriesOrder,
-        // items,
+        items,
         selfGrade,
       });
+      key = String(+key + 1);
     });
     return res;
   };
