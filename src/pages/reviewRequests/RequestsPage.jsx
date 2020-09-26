@@ -14,6 +14,7 @@ const RequestsPage = ({ user }) => {
   const [crossCheckSessions, setCrossCheckSessions] = useState([]);
   const [reviewRequest, setReviewRequest] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [pullRequest, setPullRequest] = useState('');
 
   const [basicScore, setBasicScore] = useState([]);
   const [extraScore, setExtraScore] = useState([]);
@@ -50,9 +51,10 @@ const RequestsPage = ({ user }) => {
   }, []);
 
   const ParseJsonIntoTaskCheck = (task) => {
+    console.log(task);
     if (typeof task === 'string') return task;
 
-    const { items } = task;
+    const { items, selfGrade } = task;
     const basicItems = items.filter(({ category }) => category === 'Basic Scope');
     const extraItems = items.filter(({ category }) => category === 'Extra Scope');
     const finesItems = items.filter(({ category }) => category === 'Fines');
@@ -61,8 +63,15 @@ const RequestsPage = ({ user }) => {
       <div>
         <h3>Basic Scope</h3>
         <ul>
-          {basicItems.map(({ minScore, maxScore, title }, index) => (
+          {basicItems.map(({
+            minScore, maxScore, title, name,
+          }, index) => (
             <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              <h4>
+                Self Grade :
+                {' '}
+                {JSON.stringify(selfGrade[name])}
+              </h4>
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
@@ -90,8 +99,15 @@ const RequestsPage = ({ user }) => {
       <div>
         <h3>Extra Scope</h3>
         <ul>
-          {extraItems.map(({ minScore, maxScore, title }, index) => (
+          {extraItems.map(({
+            minScore, maxScore, title, name,
+          }, index) => (
             <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              <h4>
+                Self Grade :
+                {' '}
+                {JSON.stringify(selfGrade[name])}
+              </h4>
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
@@ -119,8 +135,15 @@ const RequestsPage = ({ user }) => {
       <div>
         <h3>Fines</h3>
         <ul>
-          {finesItems.map(({ minScore, maxScore, title }, index) => (
+          {finesItems.map(({
+            minScore, maxScore, title, name,
+          }, index) => (
             <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              <h4>
+                Self Grade :
+                {' '}
+                {JSON.stringify(selfGrade[name])}
+              </h4>
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
@@ -168,6 +191,9 @@ const RequestsPage = ({ user }) => {
       const findTask = tasks.find(({ id }) => taskId === id);
       const { name, categoriesOrder, items } = findTask;
       reviewerOf.forEach(({ id }) => {
+        const reviewRequestFind = reviewRequest.find(({ userId }) => id === userId);
+        if (!reviewRequestFind) return;
+        const { selfGrade } = reviewRequestFind;
         res.push({
           key: String(+key + 1),
           name,
@@ -176,6 +202,7 @@ const RequestsPage = ({ user }) => {
           checked: 'no', // make it yes when graded a task somehow
           categoriesOrder,
           items,
+          selfGrade,
         });
         key = String(+key + 1);
       });
@@ -370,7 +397,7 @@ const RequestsPage = ({ user }) => {
             Pull Request:
             {' '}
           </span>
-          <Select style={{ width: 110 }} />
+          <input type="text" value={pullRequest} onChange={({ target }) => setPullRequest(target.value)} />
         </div>
       </Modal>
     </div>
