@@ -418,6 +418,7 @@ const RequestsPage = ({ user }) => {
           setPullRequest('');
           setVisible(false);
         }}
+        okButtonProps={{ disabled: !(pullRequest && selectedTask !== 'Select a task') }}
       >
         <div>
           <span>
