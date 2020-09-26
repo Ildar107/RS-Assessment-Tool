@@ -30,7 +30,6 @@ const RequestsPage = ({ user }) => {
   const [selectedTask, setSelectedTask] = useState('Select a task');
 
   const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
-  const [currentDate] = useState('2020-07-10'); // replace with new Date for current date and format to yyyy-mm-dd later somehow
 
   const userFromDB = 'Ulises_Johns82'; // replace with user later, placeholder user for now
   const [keyForTable2, setKeyForTable2] = useState(1);
@@ -55,7 +54,6 @@ const RequestsPage = ({ user }) => {
   }, []);
 
   const ParseJsonIntoTaskCheck = (task) => {
-    console.log(task);
     if (typeof task === 'string') return task;
 
     const { items, selfGrade } = task;
@@ -71,11 +69,13 @@ const RequestsPage = ({ user }) => {
             minScore, maxScore, title, name,
           }, index) => (
             <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              {selfGrade && (
               <h4>
                 Self Grade :
                 {' '}
-                {JSON.stringify(selfGrade[name])}
+                {JSON.stringify(selfGrade?.[name])}
               </h4>
+              )}
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
@@ -107,11 +107,13 @@ const RequestsPage = ({ user }) => {
             minScore, maxScore, title, name,
           }, index) => (
             <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              {selfGrade && (
               <h4>
                 Self Grade :
                 {' '}
-                {JSON.stringify(selfGrade[name])}
+                {JSON.stringify(selfGrade?.[name])}
               </h4>
+              )}
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
@@ -143,11 +145,13 @@ const RequestsPage = ({ user }) => {
             minScore, maxScore, title, name,
           }, index) => (
             <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
+              {selfGrade && (
               <h4>
                 Self Grade :
                 {' '}
-                {JSON.stringify(selfGrade[name])}
+                {JSON.stringify(selfGrade?.[name])}
               </h4>
+              )}
               <h5>{title}</h5>
               <Radio.Group
                 onChange={({ target }) => {
@@ -332,6 +336,7 @@ const RequestsPage = ({ user }) => {
           tableLayout="fixed"
           onRow={(record) => ({
             onClick: () => {
+              console.log(record);
               setCurrentTask(record);
               setBasicScore([]);
               setExtraScore([]);
@@ -354,6 +359,7 @@ const RequestsPage = ({ user }) => {
           tableLayout="fixed"
           onRow={(record) => ({
             onClick: () => {
+              console.log(record);
               setCurrentTask(record);
               setBasicScore([]);
               setExtraScore([]);
@@ -405,11 +411,11 @@ const RequestsPage = ({ user }) => {
             pullRequest,
             checked: 'no',
             score: '-',
-            selectedTask: JSON.parse(selectedTask),
+            task: JSON.parse(selectedTask),
             key: keyForTable2,
+            items: JSON.parse(selectedTask).items,
           };
           setData2([...data2, newReviewRequestTask]);
-
           setSelectedTask('Select a task');
           setPullRequest('');
           setVisible(false);
