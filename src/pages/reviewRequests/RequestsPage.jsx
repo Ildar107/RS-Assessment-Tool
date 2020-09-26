@@ -33,6 +33,7 @@ const RequestsPage = ({ user }) => {
   const [currentDate] = useState('2020-07-10'); // replace with new Date for current date and format to yyyy-mm-dd later somehow
 
   const userFromDB = 'Ulises_Johns82'; // replace with user later, placeholder user for now
+  const [keyForTable2, setKeyForTable2] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -397,16 +398,16 @@ const RequestsPage = ({ user }) => {
       <Modal
         title="New Review Request"
         visible={visible}
-        onOk={(e) => {
-          console.log(e);
+        onOk={() => {
+          setKeyForTable2(keyForTable2 + 1);
           const newReviewRequestTask = {
             name: JSON.parse(selectedTask).name,
             pullRequest,
             checked: 'no',
             score: '-',
             selectedTask: JSON.parse(selectedTask),
+            key: keyForTable2,
           };
-
           setData2([...data2, newReviewRequestTask]);
 
           setSelectedTask('Select a task');
