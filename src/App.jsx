@@ -2,19 +2,16 @@ import React, { useState } from 'react';
 import {
   Route, Switch, Redirect,
 } from 'react-router-dom';
-// import { DatePicker } from 'antd';
-// import { useAuth0 } from '@auth0/auth0-react';
 import routes from './constants/routes';
 import MainPage from './pages/home/MainPage';
 import AuthPage from './pages/authentication/AuthPage';
 import PrivateRoute from './components/PrivateRoute';
+import RequestsPage from './pages/reviewRequests/RequestsPage';
 
-// const Tasks = <h1>TASKS</h1>;
 const App = () => {
-  // const { isAuthenticated } = useAuth0();
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(localStorage.getItem('isAuthenticated'));
-  // console.log('isAuthenticated', isAuthenticated);
-  const [role, setRole] = useState(localStorage.getItem('role') || 'Author');
+  const [user] = useState(localStorage.getItem('user'));
+  const [role, setRole] = useState(localStorage.getItem('role') || 'author');
 
   return (
     <Switch>
@@ -62,7 +59,7 @@ const App = () => {
       <PrivateRoute
         path={routes.REQUESTS}
         exact
-        component={() => <h1>REQUESTS</h1>}
+        component={() => <RequestsPage user={user} />}
         isAuthenticatedState={isAuthenticatedState}
       />
       <Route>

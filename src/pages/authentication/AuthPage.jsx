@@ -19,10 +19,10 @@ const AuthPage = ({ setIsAuthenticatedState, setRole, role }) => {
             setRole(value);
           }}
         >
-          <Option value="Author">Author</Option>
-          <Option value="Student">Student</Option>
-          <Option value="Supervisor">Supervisor</Option>
-          <Option value="Manager">Manager</Option>
+          <Option value="author">Author</Option>
+          <Option value="student">Student</Option>
+          <Option value="supervisor">Supervisor</Option>
+          <Option value="course_manager">Course Manager</Option>
         </Select>
 
       </label>
