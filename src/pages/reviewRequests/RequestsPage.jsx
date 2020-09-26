@@ -333,7 +333,7 @@ const RequestsPage = ({ user }) => {
               if (!currentTask.selfGrade) {
                 currentTask.score = score;
                 currentTask.checked = 'yes';
-                // fetch to db here?
+                // form object and fetch to review request here?
                 setCurrentTask('Choose a task from one of the left tables');
                 setBasicScore([]);
                 setExtraScore([]);
@@ -343,6 +343,15 @@ const RequestsPage = ({ user }) => {
                 setFinesTotal(0);
                 setScore(0);
               }
+              // form object and fetch to reviews here?
+              setCurrentTask('Choose a task from one of the left tables');
+              setBasicScore([]);
+              setExtraScore([]);
+              setFinesScore([]);
+              setBasicTotal(0);
+              setExtraTotal(0);
+              setFinesTotal(0);
+              setScore(0);
             }}
           >
             Save
