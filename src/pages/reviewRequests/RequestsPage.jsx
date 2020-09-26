@@ -181,33 +181,49 @@ const RequestsPage = ({ user }) => {
 
   const generateFirstTableData = () => {
     const res = [];
-    let key = '0';
-    const filteredCrossCheckSessions = crossCheckSessions
-      .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
-       && new Date(currentDate) <= new Date(endDate));
-    filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
-      const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
-      const { reviewerOf } = findUserCrossCheck;
+    const key = '0';
+    // const filteredCrossCheckSessions = crossCheckSessions
+    //   .filter(({ startDate, endDate }) => new Date(currentDate) >= new Date(startDate)
+    //    && new Date(currentDate) <= new Date(endDate));
+    // filteredCrossCheckSessions.forEach(({ endDate, taskId, attendees }) => {
+    //   const findUserCrossCheck = attendees.find(({ githubId }) => githubId === userFromDB);
+    //   const { reviewerOf } = findUserCrossCheck;
+
+    //   const { name, categoriesOrder, items } = findTask;
+    //   reviewerOf.forEach(({ id }) => {
+    //     const reviewRequestFind = reviewRequest.find(({ userId }) => id === userId);
+    //     if (!reviewRequestFind) return;
+    //     const { selfGrade } = reviewRequestFind;
+    //     res.push({
+    //       key: String(+key + 1),
+    //       name,
+    //       id,
+    //       endDate,
+    //       checked: 'no', // make it yes when graded a task somehow
+    //       categoriesOrder,
+    //       items,
+    //       selfGrade,
+    //     });
+    //     key = String(+key + 1);
+    //   });
+    // });
+    // console.log(res);
+    const filteredReviewRequests = reviewRequest
+      .filter(({ userId, state }) => userFromDB !== userId && state === 'PUBLISHED');
+    filteredReviewRequests.forEach(({ taskId, userId, selfGrade }) => {
       const findTask = tasks.find(({ id }) => taskId === id);
-      const { name, categoriesOrder, items } = findTask;
-      reviewerOf.forEach(({ id }) => {
-        const reviewRequestFind = reviewRequest.find(({ userId }) => id === userId);
-        if (!reviewRequestFind) return;
-        const { selfGrade } = reviewRequestFind;
-        res.push({
-          key: String(+key + 1),
-          name,
-          id,
-          endDate,
-          checked: 'no', // make it yes when graded a task somehow
-          categoriesOrder,
-          items,
-          selfGrade,
-        });
-        key = String(+key + 1);
+      const { name } = findTask;
+      res.push({
+        key: String(+key + 1),
+        name,
+        id: userId,
+        // endDate,
+        // checked: 'no',
+        // categoriesOrder,
+        // items,
+        selfGrade,
       });
     });
-    // console.log(res);
     return res;
   };
 
