@@ -256,18 +256,18 @@ const RequestsPage = ({ user }) => {
       sorter: (a, b) => a.id.length - b.id.length,
       sortDirections: ['descend', 'ascend'],
     },
-    {
-      title: 'Deadline',
-      dataIndex: 'endDate',
-      sorter: (a, b) => a.endDate.length - b.endDate.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Checked',
-      dataIndex: 'checked',
-      sorter: (a, b) => a.checked.length - b.checked.length,
-      sortDirections: ['descend', 'ascend'],
-    },
+    // {
+    //   title: 'Deadline',
+    //   dataIndex: 'endDate',
+    //   sorter: (a, b) => a.endDate.length - b.endDate.length,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
+    // {
+    //   title: 'Checked',
+    //   dataIndex: 'checked',
+    //   sorter: (a, b) => a.checked.length - b.checked.length,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
   ];
 
   const columns2 = [
@@ -344,8 +344,7 @@ const RequestsPage = ({ user }) => {
             },
           })}
         />
-        <Button type="primary" onClick={() => setVisible(true)}>New Task Request</Button>
-        <Button>Check Task</Button>
+        <Button type="primary" onClick={() => setVisible(true)}>New Review Request</Button>
       </div>
 
       <div className="task-review-wrapper">
@@ -376,7 +375,7 @@ const RequestsPage = ({ user }) => {
         </main>
       </div>
       <Modal
-        title="New Task Request"
+        title="New Review Request"
         visible={visible}
         onOk={(e) => {
           console.log(e);
