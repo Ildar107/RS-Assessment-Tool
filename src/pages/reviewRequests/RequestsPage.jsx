@@ -297,12 +297,12 @@ const RequestsPage = ({ user }) => {
       sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['descend', 'ascend'],
     },
-    // {
-    //   title: 'Deadline',
-    //   dataIndex: 'endDate',
-    //   sorter: (a, b) => a.endDate.length - b.endDate.length,
-    //   sortDirections: ['descend', 'ascend'],
-    // },
+    {
+      title: 'Pull Request',
+      dataIndex: 'pullRequest',
+      sorter: (a, b) => a.pullRequest.length - b.pullRequest.length,
+      sortDirections: ['descend', 'ascend'],
+    },
     {
       title: 'Checked',
       dataIndex: 'checked',
@@ -401,6 +401,7 @@ const RequestsPage = ({ user }) => {
           console.log(e);
           const newReviewRequestTask = {
             name: JSON.parse(selectedTask).name,
+            pullRequest,
             checked: 'no',
             score: '-',
             selectedTask: JSON.parse(selectedTask),
