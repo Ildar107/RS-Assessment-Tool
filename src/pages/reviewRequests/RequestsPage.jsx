@@ -381,7 +381,7 @@ const RequestsPage = ({ user }) => {
               if (typeof currentTask === 'string') return;
               if (!currentTask.selfGrade) {
                 currentTask.score = score;
-                currentTask.checked = 'yes';
+                currentTask.checked = 'Yes';
                 // form object and fetch to review request here?
                 setCurrentTask('Choose a task from one of the left tables');
                 setBasicComments([]);
@@ -440,7 +440,7 @@ const RequestsPage = ({ user }) => {
           const newReviewRequestTask = {
             name: JSON.parse(selectedTask).name,
             pullRequest,
-            checked: 'no',
+            checked: 'No',
             score: '-',
             task: JSON.parse(selectedTask),
             key: keyForTable2,
