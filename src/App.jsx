@@ -6,12 +6,9 @@ import routes from './constants/routes';
 import MainPage from './pages/home/MainPage';
 import AuthPage from './pages/authentication/AuthPage';
 import PrivateRoute from './components/PrivateRoute';
-<<<<<<< HEAD
 import EditCheckingList from './pages/edit/EditCheckingList';
-=======
 import ReviewsPage from './pages/reviews/ReviewsPage';
 import RequestsPage from './pages/reviewRequests/RequestsPage';
->>>>>>> develop
 
 const App = () => {
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(localStorage.getItem('isAuthenticated'));
