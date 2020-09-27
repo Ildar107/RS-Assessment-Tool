@@ -8,6 +8,7 @@ import routes from './constants/routes';
 import MainPage from './pages/home/MainPage';
 import AuthPage from './pages/authentication/AuthPage';
 import PrivateRoute from './components/PrivateRoute';
+import ReviewsPage from './pages/reviews/ReviewsPage';
 
 // const Tasks = <h1>TASKS</h1>;
 const App = () => {
@@ -56,9 +57,10 @@ const App = () => {
       <PrivateRoute
         path={routes.REVIEWS}
         exact
-        component={() => <h1>REVIEWS</h1>}
         isAuthenticatedState={isAuthenticatedState}
-      />
+      >
+        <ReviewsPage />
+      </PrivateRoute>
       <PrivateRoute
         path={routes.REQUESTS}
         exact
