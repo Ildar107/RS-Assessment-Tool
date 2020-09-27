@@ -39,6 +39,8 @@ const RequestsPage = ({ user }) => {
   const userFromDB = 'Maddison_Yost'; // replace with user later, placeholder user for now
   const [keyForTable2, setKeyForTable2] = useState(1);
 
+  console.log(user, users, disputes, reviews, crossCheckSessions);
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch('https://x-check-json-server.herokuapp.com/db', {
