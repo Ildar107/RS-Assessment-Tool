@@ -213,9 +213,13 @@ const RequestsPage = ({ user }) => {
             {' '}
           </span>
           <Select
+            showSearch
             style={{ width: 250 }}
             value={selectedTask}
             onChange={setSelectedTask}
+            filterOption={
+              (input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
           >
             {tasks.map((task) => (
               <Option value={task.id} key={task.id}>{task.name}</Option>
