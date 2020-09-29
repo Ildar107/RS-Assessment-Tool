@@ -1,466 +1,213 @@
 /* eslint-disable no-shadow */
 import React, { useState, useEffect } from 'react';
 import {
-  Table, Button, Select, Radio, Modal,
+  Button, Select, Modal,
 } from 'antd';
+
 import './requestsPage.scss';
+import ReviewRequestForm from '../../components/ReviewRequests/ReviewRequestForm';
+import TableAnt from '../../components/ReviewRequests/TableAnt';
 
 const { Option } = Select;
 
+const firstMessage = 'Choose a review request from one of the left tables';
+const selectTaskPlaceholder = 'Select a task';
+
 const RequestsPage = ({ user }) => {
-  const [users, setUsers] = useState([]);
-  const [disputes, setDisputes] = useState([]);
-  const [reviews, setReviews] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [crossCheckSessions, setCrossCheckSessions] = useState([]);
+  const [ownRequests, setOwnRequests] = useState([]);
   const [reviewRequest, setReviewRequest] = useState([]);
   const [visible, setVisible] = useState(false);
   const [pullRequest, setPullRequest] = useState('');
-
-  const [basicScore, setBasicScore] = useState([]);
-  const [extraScore, setExtraScore] = useState([]);
-  const [finesScore, setFinesScore] = useState([]);
-
-  const [basicComments, setBasicComments] = useState([]);
-  const [extraComments, setExtraComments] = useState([]);
-  const [finesComments, setFinesComments] = useState([]);
-
-  const [basicTotal, setBasicTotal] = useState(0);
-  const [extraTotal, setExtraTotal] = useState(0);
-  const [finesTotal, setFinesTotal] = useState(0);
-
-  const [score, setScore] = useState(0);
-
-  const [data2, setData2] = useState([]);
   const [selectedTask, setSelectedTask] = useState('Select a task');
-
-  const [currentTask, setCurrentTask] = useState('Choose a task from one of the left tables');
-
-  const userFromDB = 'Maddison_Yost'; // replace with user later, placeholder user for now
-  const [keyForTable2, setKeyForTable2] = useState(1);
-
-  console.log(user, users, disputes, reviews, crossCheckSessions);
+  const [isSelfReview, setIsSelfReview] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('https://x-check-json-server.herokuapp.com/db', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const requestRes = await fetch('https://x-check-json-server.herokuapp.com/reviewRequest');
+      const requests = await requestRes.json();
+      const reviewsRes = await fetch('https://x-check-json-server.herokuapp.com/reviews');
+      const reviews = await reviewsRes.json();
+      const tasksRes = await fetch('https://x-check-json-server.herokuapp.com/tasks');
+      const tasks = await tasksRes.json();
+
+      requests.map((x) => {
+        x.key = x.id;
+        // переделать объект user
+        const currentUserReview = reviews
+          .find((y) => x.id === y.reviewRequestId && y.userId === user.nickname);
+        const requestTask = tasks.find((t) => t.id === x.taskId);
+        x.score = currentUserReview
+          ? Object.keys(currentUserReview.grade).reduce((a, c) => {
+            const score = currentUserReview.grade[c] ? currentUserReview.grade[c].score : 0;
+            return a + score;
+          }, 0)
+          : null;
+        x.checked = !!x.score;
+        x.review = currentUserReview || null;
+        x.task = requestTask || null;
+        x.taskName = requestTask?.name;
+        if (x.userId === user.nickname) {
+          x.selfScore = x.selfGrade
+            ? Object.keys(x.selfGrade).reduce((a, c) => {
+              const score = x.selfGrade[c] ? x.selfGrade[c].score : 0;
+              return a + score;
+            }, 0)
+            : null;
+          x.selfCheck = !!x.selfScore;
+        }
+        return x;
       });
-      const fetchedData = await res.json();
-      setUsers(fetchedData?.users);
-      setDisputes(fetchedData?.disputes);
-      setReviews(fetchedData?.reviews);
-      setTasks(fetchedData?.tasks);
-      setCrossCheckSessions(fetchedData?.crossCheckSessions);
-      setReviewRequest(fetchedData?.reviewRequest);
+      setTasks(tasks.filter((x) => x.state === 'PUBLISHED'));
+      setOwnRequests(requests.filter((x) => x.state !== 'COMPLETED' && x.userId === user.nickname));
+      setReviewRequest(requests.filter((x) => x.state === 'PUBLISHED' && x.userId !== user.nickname));
     };
     fetchData();
   }, []);
 
-  const ParseJsonIntoTaskCheck = (task) => {
-    if (typeof task === 'string') return task;
-
-    const { items, selfGrade, pullRequest } = task;
-    const basicItems = items.filter(({ category }) => category === 'Basic Scope');
-    const extraItems = items.filter(({ category }) => category === 'Extra Scope');
-    const finesItems = items.filter(({ category }) => category === 'Fines');
-
-    const basicScope = (
-      <div>
-        <h3>Basic Scope</h3>
-        <ul>
-          {basicItems.map(({
-            minScore, maxScore, title, name,
-          }, index) => (
-            <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
-              {selfGrade && (
-              <h4>
-                Self Grade :
-                {' '}
-                {JSON.stringify(selfGrade?.[name])}
-              </h4>
-              )}
-              <h5>{title}</h5>
-              <Radio.Group
-                onChange={({ target }) => {
-                  const newBasicScore = [...basicScore];
-                  newBasicScore.splice(index, 1, target.value);
-                  setBasicScore(newBasicScore);
-                  const newBasicScoreTotal = newBasicScore.reduce(
-                    (accum, value) => accum + value, 0,
-                  );
-                  setBasicTotal(newBasicScoreTotal);
-                  setScore(newBasicScoreTotal + extraTotal + finesTotal);
-                }}
-                value={basicScore[index]}
-              >
-                <Radio value={minScore}>Не выполнено</Radio>
-                <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
-                <Radio value={maxScore}>Выполнено полностью</Radio>
-              </Radio.Group>
-              <h4>
-                Leave comment :
-                {' '}
-                <input
-                  type="text"
-                  value={basicComments[index]}
-                  onChange={({ target }) => setBasicComments((state) => {
-                    const copy = [...state];
-                    copy.splice(index, 1, target.value);
-                    return copy;
-                  })}
-                />
-              </h4>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-    const extraScope = (
-      <div>
-        <h3>Extra Scope</h3>
-        <ul>
-          {extraItems.map(({
-            minScore, maxScore, title, name,
-          }, index) => (
-            <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
-              {selfGrade && (
-              <h4>
-                Self Grade :
-                {' '}
-                {JSON.stringify(selfGrade?.[name])}
-              </h4>
-              )}
-              <h5>{title}</h5>
-              <Radio.Group
-                onChange={({ target }) => {
-                  const newExtraScore = [...extraScore];
-                  newExtraScore.splice(index, 1, target.value);
-                  setExtraScore(newExtraScore);
-                  const newExtraScoreTotal = newExtraScore.reduce(
-                    (accum, value) => accum + value, 0,
-                  );
-                  setExtraTotal(newExtraScoreTotal);
-                  setScore(basicTotal + newExtraScoreTotal + finesTotal);
-                }}
-                value={extraScore[index]}
-              >
-                <Radio value={minScore}>Не выполнено</Radio>
-                <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
-                <Radio value={maxScore}>Выполнено полностью</Radio>
-              </Radio.Group>
-              <h4>
-                Leave comment :
-                {' '}
-                <input
-                  type="text"
-                  value={extraComments[index]}
-                  onChange={({ target }) => setExtraComments((state) => {
-                    const copy = [...state];
-                    copy.splice(index, 1, target.value);
-                    return copy;
-                  })}
-                />
-              </h4>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-    const fines = (
-      <div>
-        <h3>Fines</h3>
-        <ul>
-          {finesItems.map(({
-            minScore, maxScore, title, name,
-          }, index) => (
-            <li style={{ listStyle: 'none' }} key={`${index} and ${title}`}>
-              {selfGrade && (
-              <h4>
-                Self Grade :
-                {' '}
-                {JSON.stringify(selfGrade?.[name])}
-              </h4>
-              )}
-              <h5>{title}</h5>
-              <Radio.Group
-                onChange={({ target }) => {
-                  const newFinesScore = [...finesScore];
-                  newFinesScore.splice(index, 1, target.value);
-                  setFinesScore(newFinesScore);
-                  const newFinesScoreTotal = newFinesScore.reduce(
-                    (accum, value) => accum + value, 0,
-                  );
-                  setFinesTotal(newFinesScoreTotal);
-                  setScore(basicTotal + extraTotal + newFinesScoreTotal);
-                }}
-                value={finesScore[index]}
-              >
-                <Radio value={minScore}>Не выполнено</Radio>
-                <Radio value={Math.round((maxScore + minScore) / 2)}>Выполнено частично</Radio>
-                <Radio value={maxScore}>Выполнено полностью</Radio>
-              </Radio.Group>
-              <h4>
-                Leave comment :
-                {' '}
-                <input
-                  type="text"
-                  value={finesComments[index]}
-                  onChange={({ target }) => setFinesComments((state) => {
-                    const copy = [...state];
-                    copy.splice(index, 1, target.value);
-                    return copy;
-                  })}
-                />
-              </h4>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-
-    return (
-      <div>
-        <h4>
-          Pull request :
-          {' '}
-          {pullRequest}
-        </h4>
-        {basicScope}
-        <br />
-        {extraScope}
-        <br />
-        {fines}
-      </div>
-    );
+  const save = (isRequest) => {
+    setSelectedRequest(null);
+    if (isRequest) {
+      setReviewRequest([...reviewRequest]);
+    } else {
+      setOwnRequests([...ownRequests]);
+    }
   };
-
-  const generateFirstTableData = () => {
-    const res = [];
-    let key = '0';
-    const filteredReviewRequests = reviewRequest
-      .filter(({ userId, state }) => userFromDB !== userId && state === 'PUBLISHED');
-    filteredReviewRequests.forEach(({
-      taskId, userId, selfGrade, pullRequest,
-    }) => {
-      const findTask = tasks.find(({ id }) => taskId === id);
-      const { name, items } = findTask;
-      res.push({
-        key: String(+key + 1),
-        name,
-        id: userId,
-        pullRequest,
-        items,
-        selfGrade,
-      });
-      key = String(+key + 1);
-    });
-    return res;
-  };
-
-  const data1 = generateFirstTableData();
-
-  const columns1 = [
-    {
-      title: 'Task',
-      dataIndex: 'name',
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'User',
-      dataIndex: 'id',
-      sorter: (a, b) => a.id.length - b.id.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Pull Request',
-      dataIndex: 'pullRequest',
-      sorter: (a, b) => a.pullRequest.length - b.pullRequest.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-  ];
-
-  const columns2 = [
-    {
-      title: 'Task',
-      dataIndex: 'name',
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Pull Request',
-      dataIndex: 'pullRequest',
-      sorter: (a, b) => a.pullRequest.length - b.pullRequest.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Checked',
-      dataIndex: 'checked',
-      sorter: (a, b) => a.checked.length - b.checked.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Score',
-      dataIndex: 'score',
-      sorter: {
-        compare: (a, b) => a.score - b.score,
+  const saveReview = async (review, isNew, reviewScore) => {
+    await fetch('https://x-check-json-server.herokuapp.com/reviews', {
+      method: isNew ? 'POST' : 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    },
-  ];
+      body: JSON.stringify(review),
+    });
+    const request = reviewRequest.find((r) => r.id === review.reviewRequestId);
+    request.review = review;
+    request.score = reviewScore;
+    request.checked = true;
+    save(true);
+  };
+
+  const saveSelfGrade = async (selfRequest, selfScore) => {
+    const res = await fetch(`https://x-check-json-server.herokuapp.com/reviewRequest/${selfRequest.id}`, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(selfRequest),
+    });
+    console.log(res);
+    const request = ownRequests.find((r) => r.id === selfRequest.id);
+    request.state = 'PUBLISHED';
+    request.selfGrade = selfRequest.selfGrade;
+    request.selfScore = selfScore;
+    request.selfCheck = true;
+    save(false);
+  };
+
+  const createNewRequestReview = async () => {
+    const checkRes = await fetch(`https://x-check-json-server.herokuapp.com/reviewRequest?taskId=${selectedTask}&userId=${user.nickname}`);
+    const checkData = await checkRes.json();
+    console.log(checkData);
+    if (!checkData || !checkData.some((x) => x.state === 'PUBLISHED' || x.state === 'DRAFT')) {
+      const newRequest = {
+        state: 'DRAFT',
+        taskId: selectedTask,
+        pullRequest,
+        crossCheckSessionsId: null,
+        userId: user.nickname,
+        selfGrade: {},
+      };
+      const res = await fetch('https://x-check-json-server.herokuapp.com/reviewRequest', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newRequest),
+      });
+      const data = await res.json();
+      newRequest.key = data.id;
+      newRequest.task = tasks.find((x) => x.id === selectedTask);
+      newRequest.taskName = newRequest.task.name;
+      newRequest.id = data.id;
+      newRequest.selfCheck = false;
+      newRequest.review = null;
+      setOwnRequests([...ownRequests, newRequest]);
+    }
+    setSelectedRequest(null);
+  };
+
   return (
     <div className="request-page-wrapper">
       <div className="table-wrapper">
-        <Table
-          columns={columns1}
-          dataSource={data1}
-          style={{ width: 650 }}
-          pagination={{ defaultPageSize: 5 }}
-          title={() => 'Tasks for review'}
-          bordered
-          size="small"
-          tableLayout="fixed"
-          onRow={(record) => ({
-            onClick: () => {
-              console.log(record);
-              setCurrentTask(record);
-              setBasicComments([]);
-              setExtraComments([]);
-              setFinesComments([]);
-              setBasicScore([]);
-              setExtraScore([]);
-              setFinesScore([]);
-              setBasicTotal(0);
-              setExtraTotal(0);
-              setFinesTotal(0);
-              setScore(0);
-            },
-          })}
-        />
-        <Table
-          columns={columns2}
-          dataSource={data2}
-          style={{ width: 650 }}
-          pagination={{ defaultPageSize: 5 }}
-          title={() => 'Selfchecking'}
-          bordered
-          size="small"
-          tableLayout="fixed"
-          onRow={(record) => ({
-            onClick: () => {
-              console.log(record);
-              setCurrentTask(record);
-              setBasicComments([]);
-              setExtraComments([]);
-              setFinesComments([]);
-              setBasicScore([]);
-              setExtraScore([]);
-              setFinesScore([]);
-              setBasicTotal(0);
-              setExtraTotal(0);
-              setFinesTotal(0);
-              setScore(0);
-            },
-          })}
-        />
-        <Button type="primary" onClick={() => setVisible(true)}>New Review Request</Button>
+        <div className="request__table">
+          <div className="request__header">
+            <h3>Review requests</h3>
+            <Button type="primary" onClick={() => setVisible(true)}>New Review Request</Button>
+          </div>
+          <TableAnt
+            tableName="requests"
+            selectedRow={selectedRequest}
+            datasource={reviewRequest}
+            handleClick={(record) => {
+              setIsSelfReview(false);
+              setSelectedRequest(record);
+            }}
+          />
+        </div>
+        <div className="selfcheck__table">
+          <h3>Self Checking</h3>
+          <TableAnt
+            tableName="selfreviews"
+            selectedRow={selectedRequest}
+            datasource={ownRequests}
+            handleClick={(record) => {
+              setIsSelfReview(true);
+              setSelectedRequest(record);
+            }}
+          />
+        </div>
       </div>
-
       <div className="task-review-wrapper">
         <header className="task-review-header">
-          <h3>Task Review</h3>
-          <span>
-            Score:
-            {' '}
-            {score}
-          </span>
-          <Button
-            type="primary"
-            onClick={() => {
-              if (typeof currentTask === 'string') return;
-              if (!currentTask.selfGrade) {
-                currentTask.score = score;
-                currentTask.checked = 'Yes';
-                // form object and fetch to review request here?
-                setCurrentTask('Choose a task from one of the left tables');
-                setBasicComments([]);
-                setExtraComments([]);
-                setFinesComments([]);
-                setBasicScore([]);
-                setExtraScore([]);
-                setFinesScore([]);
-                setBasicTotal(0);
-                setExtraTotal(0);
-                setFinesTotal(0);
-                setScore(0);
-              }
-              // form object and fetch to reviews here?
-              setCurrentTask('Choose a task from one of the left tables');
-              setBasicComments([]);
-              setExtraComments([]);
-              setFinesComments([]);
-              setBasicScore([]);
-              setExtraScore([]);
-              setFinesScore([]);
-              setBasicTotal(0);
-              setExtraTotal(0);
-              setFinesTotal(0);
-              setScore(0);
-            }}
-          >
-            Save
-          </Button>
-          <Button onClick={() => {
-            setCurrentTask('Choose a task from one of the left tables');
-            setBasicComments([]);
-            setExtraComments([]);
-            setFinesComments([]);
-            setBasicScore([]);
-            setExtraScore([]);
-            setFinesScore([]);
-            setBasicTotal(0);
-            setExtraTotal(0);
-            setFinesTotal(0);
-            setScore(0);
-          }}
-          >
-            Cancel
-          </Button>
+          <h3>Task review</h3>
         </header>
         <main className="task-review-main">
-          {ParseJsonIntoTaskCheck(currentTask)}
+          {selectedRequest ? (
+            <ReviewRequestForm
+              request={selectedRequest}
+              currentUserId={user.nickname}
+              saveReview={saveReview}
+              saveSelfGrade={saveSelfGrade}
+              isSelfReview={isSelfReview}
+              cancel={() => {
+                setSelectedRequest(null);
+              }}
+            />
+          ) : firstMessage }
         </main>
       </div>
       <Modal
         title="New Review Request"
         visible={visible}
         onOk={() => {
-          setKeyForTable2(keyForTable2 + 1);
-          const newReviewRequestTask = {
-            name: JSON.parse(selectedTask).name,
-            pullRequest,
-            checked: 'No',
-            score: '-',
-            task: JSON.parse(selectedTask),
-            key: keyForTable2,
-            items: JSON.parse(selectedTask).items,
-          };
-          setData2([...data2, newReviewRequestTask]);
-          setSelectedTask('Select a task');
+          createNewRequestReview();
+          setSelectedTask(selectTaskPlaceholder);
           setPullRequest('');
           setVisible(false);
         }}
         onCancel={() => {
-          setSelectedTask('Select a task');
+          setSelectedTask(selectTaskPlaceholder);
           setPullRequest('');
           setVisible(false);
         }}
-        okButtonProps={{ disabled: !(pullRequest && selectedTask !== 'Select a task') }}
+        okButtonProps={{ disabled: !(pullRequest && selectedTask !== selectTaskPlaceholder) }}
       >
-        <div>
+        <div className="model-item">
           <span>
             Task Name:
             {' '}
@@ -471,11 +218,11 @@ const RequestsPage = ({ user }) => {
             onChange={setSelectedTask}
           >
             {tasks.map((task) => (
-              <Option value={JSON.stringify(task)} key={task.id}>{task.name}</Option>
+              <Option value={task.id} key={task.id}>{task.name}</Option>
             ))}
           </Select>
         </div>
-        <div>
+        <div className="model-item">
           <span>
             Pull Request:
             {' '}

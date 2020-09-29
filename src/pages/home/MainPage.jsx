@@ -2,11 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Card, Button, Menu } from 'antd';
-// import {
-//   PieChartOutlined,
-//   DesktopOutlined,
-//   ContainerOutlined,
-// } from '@ant-design/icons';
 import routes from '../../constants/routes';
 import './mainPage.scss';
 
@@ -22,18 +17,14 @@ const MainPage = ({ setIsAuthenticatedState, role }) => {
     <div className="main-page-wrapper">
       <div className="user-info-and-menu-wrapper">
         <Card
-          // hoverable
-          style={{
-            width: 300,
-            border: '1px solid #1112',
-          }}
+          className="user-card"
           cover={(
             <img
               src={user?.picture || JSON.parse(localStorage.getItem('user'))?.picture}
               alt="pic"
-              style={{ border: '1px solid #1112' }}
+              style={{ border: '1px solid #1112', borderRadius: '50%', width: '200px' }}
             />
-)}
+          )}
         >
           <Meta
             style={{ textAlign: 'center' }}
@@ -41,11 +32,6 @@ const MainPage = ({ setIsAuthenticatedState, role }) => {
             description={role}
           />
         </Card>
-        {/* <ul>
-          <li><Link to={routes.TASKS}><span>Tasks</span></Link></li>
-          <li><Link to={routes.REVIEWS}><span>Reviews</span></Link></li>
-          <li><Link to={routes.REQUESTS}><span>Review requests</span></Link></li>
-        </ul> */}
         <Button
           type="primary"
           style={{ margin: 20 }}
@@ -57,7 +43,7 @@ const MainPage = ({ setIsAuthenticatedState, role }) => {
         >
           Log Out
         </Button>
-        <div style={{ width: 300, border: '1px solid #1112' }}>
+        <div>
           <Menu
             mode="inline"
             style={{ textAlign: 'center' }}
@@ -66,15 +52,15 @@ const MainPage = ({ setIsAuthenticatedState, role }) => {
               <Link to={routes.TASKS}><span>Tasks</span></Link>
             </Menu.Item>
             <Menu.Item>
-              <Link to={routes.REVIEWS}><span>Reviews</span></Link>
+              <Link to={routes.REQUESTS}><span>Review requests</span></Link>
             </Menu.Item>
             <Menu.Item>
-              <Link to={routes.REQUESTS}><span>Review requests</span></Link>
+              <Link to={routes.REVIEWS}><span>Reviews</span></Link>
             </Menu.Item>
           </Menu>
         </div>
       </div>
-      <div className="main-page-content-wrapper">Content</div>
+      <div className="main-page-content-wrapper" />
     </div>
   );
 };

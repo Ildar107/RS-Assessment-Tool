@@ -134,16 +134,6 @@ const ReviewsPage = () => {
 
   const taskColumnsTop = [
     {
-      title: '№',
-      dataIndex: 'index',
-      ...getColumnSearchProps('index'),
-      sorter: {
-        compare: (a, b) => a.index - b.index,
-        multiple: 1,
-      },
-      ellipsis: true,
-    },
-    {
       title: 'Task name',
       dataIndex: 'name',
       ...getColumnSearchProps('name'),
@@ -252,7 +242,7 @@ const ReviewsPage = () => {
                     v.map((x) => (grade[x.name]
                       ? (
                         <li className="category__list-item" key={x.name}>
-                          <Checkbox defaultChecked={grade[x.name].score !== 0} disabled />
+                          <Checkbox defaultChecked={grade[x.name].score !== x.minScore} disabled />
                           <span className="title">{x.title}</span>
                           <span className="score">
                             {grade[x.name].score}

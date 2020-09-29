@@ -68,7 +68,7 @@ const App = () => {
       <PrivateRoute
         path={routes.REQUESTS}
         exact
-        component={() => <RequestsPage user={user} />}
+        component={() => <RequestsPage user={JSON.parse(user)} />}
         isAuthenticatedState={isAuthenticatedState}
       />
       <Route>
