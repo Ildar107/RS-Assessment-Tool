@@ -1,22 +1,46 @@
-.auth-page-wrapper {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 300px;
-  height: 300px;
-  position: relative;
-  top: calc(50vh - 150px);
-  left: calc(50vw - 150px);
-  border: 1px solid #1112;
-  padding: 30px;
 
-  .label-for-select{
-    display: flex;
-    flex-direction: column;
-    font-size: 24px;
+.auth__spin.ant-spin-nested-loading > div > .ant-spin {
+  max-height: 100%;
+}
+
+.auth-page-wrapper {
+  display: flex;
+  min-height: 100vh;
+
+  .header__title {
     text-align: center;
-    height: 100px;
+  }
+
+  .control{
+    display: flex;
+    font-size: 16px;
+    text-align: left;
+    flex-direction: column;
+    height: 70px;
     justify-content: space-evenly;
+    margin-bottom: 26px;
+  }
+
+  .form-container{
+    padding: 0 130px;
+    display: flex;
+    padding-top: 200px;
+    flex-direction: column;
+    width:35%;
+
+    box-shadow: inset 0px -1px 3px 5px #33353c;
+      box-sizing: content-box;
+  }
+
+  .label_between {
+    margin: 30px 0;
+    text-align: center;
+  }
+
+  .content {
+    background-color: #33353c;
+    width: 65%;
+    padding: 20px;
+    border: 1px solid #1112;
   }
 }

@@ -6,7 +6,7 @@ import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 import './reviewsPage.scss';
 
-const ReviewsPage = () => {
+const ReviewsPage = ({ role, user }) => {
   const [requestedTasks, setRequestedTasks] = useState();
   const [requestReviews, setRequestReviews] = useState();
   const [selectedRequestRow, setSelectedRequestRow] = useState();
@@ -31,7 +31,9 @@ const ReviewsPage = () => {
       topLevel.map((x) => {
         x.key = x.id;
         // найти все реквесты пользователя
-        x.requests = requests.filter((r) => r.taskId === x.id);
+        x.requests = role !== 'supervisor'
+          ? requests.filter((r) => r.taskId === x.id && r.userId === user.nickname)
+          : requests.filter((r) => r.taskId === x.id);
 
         x.requestCounts = x.requests.length;
         // найти все ревью для ревью реквеста

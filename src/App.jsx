@@ -63,7 +63,7 @@ const App = () => {
         exact
         isAuthenticatedState={isAuthenticatedState}
       >
-        <ReviewsPage />
+        <ReviewsPage role={role} user={JSON.parse(user)} />
       </PrivateRoute>
       <PrivateRoute
         path={routes.REQUESTS}

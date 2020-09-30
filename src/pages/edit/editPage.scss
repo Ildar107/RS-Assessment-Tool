@@ -3,6 +3,10 @@
   min-height: 100vh;
   box-sizing: border-box;
 
+  .hideButton{
+    display: none;
+  }
+
   & .input-name {
     margin-top: 20px;
     margin-bottom: 0px;
@@ -62,7 +66,6 @@
       border-color:#515256;
     }
     textarea {
-
       margin-bottom: 15px;
       color: #bbb5b5;
       background: #33353c;
