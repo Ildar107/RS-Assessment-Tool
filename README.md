@@ -5,6 +5,7 @@
 ## Demo
 
 Развернутое приложение находиться <strong>[здесь](https://group2-xcheck.netlify.app/)</strong>
+Развернутая база приложения на <strong>[хероку](https://x-check-json-server.herokuapp.com/)</strong>
 <br>
 
 ## Роли
