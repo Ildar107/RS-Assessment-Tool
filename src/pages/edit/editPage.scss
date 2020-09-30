@@ -1,0 +1,101 @@
+.edit-task-wrapper {
+  display: flex;
+  min-height: 100vh;
+  box-sizing: border-box;
+
+  .hideButton{
+    display: none;
+  }
+
+  & .input-name {
+    margin-top: 20px;
+    margin-bottom: 0px;
+  }
+  & .edit-button{
+    margin-top: 25px;
+    margin-right: 10px;
+
+  }
+
+  .ant-table-thead > tr > th {
+    background: #e8e8e8;
+  }
+
+  .custom__row {
+    cursor: pointer;
+  }
+
+  .row_selected > td{
+      background: #dcf4ff!important;
+  }
+
+  .row_selected:hover{
+      background: #308db8;
+  }
+
+  .tables__container {
+    display: flex;
+    width: 35%;
+    flex-direction: column;
+    padding: 21px;
+    box-shadow: inset 0px -1px 3px 5px #33353c;
+    box-sizing: content-box;
+
+    .tasks__header {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+  }
+
+  .task__container{
+    background-color: #33353c;
+    width: 65%;
+    padding: 21px;
+    padding-left: 50px;
+    color: #bbb5b5;
+
+    .ant-radio-wrapper {
+      color: #bbb5b5;
+    }
+
+    input {
+      color: #bbb5b5;
+      background: #33353c;
+      border-color:#515256;
+    }
+    textarea {
+      margin-bottom: 15px;
+      color: #bbb5b5;
+      background: #33353c;
+      border-color:#515256;
+    }
+    textarea:hover, textarea:focus, input:hover, input:focus {
+      border-color: #40a9ff;
+    }
+    textarea:invalid, input:invalid {
+      outline: 1px solid rgb(165, 71, 71);
+      border: 1px solid rgb(165, 71, 71);
+    }
+
+  }
+}
+
+.task__view {
+  margin-bottom: 10px;
+  padding: 0 10px;
+  height: 500px;
+  overflow: auto;
+  .task__view__header {
+    margin-bottom: 10px;
+  }
+}
+
+.task__view__item {
+  margin: 10px 0;
+  padding: 0 10px;
+  .item__unit {
+    padding-left: 20px;
+  }
+}
