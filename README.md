@@ -1,10 +1,10 @@
 # RS-Assessment-Tool
 
-Данное приложение предназначено для создания/проверки/(просмотра првоерки) задания.<br>
+Данное приложение предназначено для создания/проверки/(просмотра проверки) задания.<br>
 
 ## Demo
 
-Развернутое приложение находиться <strong>[здесь](https://group2-xcheck.netlify.app/)</strong>
+Развернутое приложение находится <strong>[здесь](https://group2-xcheck.netlify.app/)</strong>
 <br>
 Развернутая база приложения на <strong>[хероку](https://x-check-json-server.herokuapp.com/)</strong>
 <br>
