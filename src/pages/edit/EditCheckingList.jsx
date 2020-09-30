@@ -229,14 +229,20 @@ export default class EditCheckingList extends React.Component {
       } = this.state;
 
       const options = ['DRAFT', 'PUBLISHED', 'ARCHIVED'];
-
+      console.log(this.props.role);
       return (
 
         <div className="edit-task-wrapper">
           <div className="tables__container">
             <div className="tasks__header">
               <h3>Tasks</h3>
-              <Button type="primary" onClick={() => this.newTask()}>Create new Task</Button>
+              <Button
+                type="primary"
+                className={this.props.role !== 'student' ? '' : 'hideButton'}
+                onClick={() => this.newTask()}
+              >
+                Create new Task
+              </Button>
             </div>
             <TableAnt
               tableName="tasks"
@@ -317,7 +323,7 @@ export default class EditCheckingList extends React.Component {
                     key="save"
                     type="primary"
                     className="edit-button"
-                    disabled={selectedRow !== null && selectedRow.state !== 'DRAFT'}
+                    disabled={this.props.role === 'student' || (selectedRow !== null && selectedRow.state !== 'DRAFT')}
                     htmlType="submit"
                   >
                     Save
