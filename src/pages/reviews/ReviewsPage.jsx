@@ -236,7 +236,7 @@ const ReviewsPage = ({ role, user }) => {
         result.push(
           <div className="category" key={k}>
             <h3>
-              {`${k}`}
+              {`${task.items.find((t) => t.category === k).categoryTitle}`}
               {` ${catScore}/${maxScore}`}
             </h3>
             <ul>
