@@ -10,9 +10,7 @@ const ReviewRequestForm = ({
     : request.score || 0);
   const [scoreMap, setScoreMap] = useState();
 
-  const categoryArr = request.task.items
-    .filter((x, i, arr) => arr.findIndex((y) => y.category === x.category) === i)
-    .map((x) => x.category);
+  const categoryArr = request.task.categoriesOrder;
 
   useEffect(() => {
     const newMap = new Map();
@@ -98,7 +96,7 @@ const ReviewRequestForm = ({
               </div>
               { categoryArr.map((c) => (
                 <div className="task__item__container" key={c + request.id}>
-                  <h3>{c}</h3>
+                  <h3>{request.task.items.find((x) => x.category === c).categoryTitle}</h3>
                   <ul>
                     {
                       request.task.items.filter((x) => x.category === c).map((i) => {

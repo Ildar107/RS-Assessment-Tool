@@ -3,10 +3,10 @@ import {
   Checkbox, Table, Button, Input, Space,
 } from 'antd';
 import Highlighter from 'react-highlight-words';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, ReadOutlined } from '@ant-design/icons';
 
 const TableAnt = ({
-  tableName, handleClick, datasource, selectedRow,
+  tableName, handleClick, datasource, selectedRow, previewClick,
 }) => {
   let columns = [];
   let searchInput = null;
@@ -148,6 +148,47 @@ const TableAnt = ({
       }];
       break;
     }
+    case 'tasks': {
+      columns = [{
+        title: 'Name',
+        dataIndex: 'name',
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        sortDirections: ['descend', 'ascend'],
+        ...getColumnSearchProps('name'),
+      },
+      {
+        title: 'Author',
+        dataIndex: 'userId',
+        sorter: (a, b) => a.userId.localeCompare(b.userId),
+        sortDirections: ['descend', 'ascend'],
+        ...getColumnSearchProps('userId'),
+      },
+      {
+        title: 'State',
+        dataIndex: 'state',
+        sorter: {
+          compare: (a, b) => a.state.localeCompare(b.state),
+        },
+        ...getColumnSearchProps('state'),
+      },
+      {
+        title: 'Preview',
+        dataIndex: 'id',
+        render: (id) => (
+          <Button
+            type="primary"
+            ghost
+            shape="circle"
+            icon={<ReadOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              previewClick(id);
+            }}
+          />
+        ),
+      }];
+      break;
+    }
     default: {
       columns = [];
     }
@@ -158,7 +199,7 @@ const TableAnt = ({
       rowClassName={(row) => `custom__row ${row.id === selectedRow?.id ? 'row_selected' : ''}`}
       columns={columns}
       dataSource={datasource}
-      pagination={{ defaultPageSize: 5 }}
+      pagination={{ defaultPageSize: tableName === 'tasks' ? 10 : 5 }}
       onRow={(record) => ({
         onClick: () => handleClick(record),
       })}

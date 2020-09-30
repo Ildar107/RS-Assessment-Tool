@@ -1,10 +1,12 @@
 import React from 'react';
 import {
-  Input, Button, Radio, Menu, Dropdown,
+  Input, Button, Radio,
 } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+// import { DownOutlined } from '@ant-design/icons';
 // import { data } from './Data';
 import './editPage.scss';
+import TableAnt from '../../components/ReviewRequests/TableAnt';
+import ModalPreview from '../../components/EditCheckingList/ModalPreview';
 
 const { TextArea } = Input;
 
@@ -19,62 +21,65 @@ export default class EditCheckingList extends React.Component {
       valueAuthor: '',
       valueState: '',
       view: '',
+      selectedRow: null,
+      isShowPreview: false,
       data: [],
     };
-    this.getTasks = this.getTasks.bind(this);
-    this.saveTask = this.saveTask.bind(this);
-    this.editTask = this.editTask.bind(this);
-    this.newTask = this.newTask.bind(this);
-    this.createMarkdown = this.createMarkdown.bind(this);
-    this.createTaskFromMarkdown = this.createTaskFromMarkdown.bind(this);
+    // this.getTasks = this.getTasks.bind(this);
+    // this.saveTask = this.saveTask.bind(this);
+    // this.editTask = this.editTask.bind(this);
+    // this.newTask = this.newTask.bind(this);
+    // this.createMarkdown = this.createMarkdown.bind(this);
+    // this.createTaskFromMarkdown = this.createTaskFromMarkdown.bind(this);
   }
 
-    getTasks = () => {
-      fetch('https://x-check-json-server.herokuapp.com/tasks', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
-        .then((result) => {
-          // console.log('+++>', result);
-          this.setState({ data: result });
-        })
-        .catch((err) => console.log(err));
+    getTasks = async () => {
+      try {
+        const res = await fetch('https://x-check-json-server.herokuapp.com/tasks');
+        const data = await res.json();
 
-      // Response: {roles: Array(2), id: "your-github-name"}
+        this.setState({ data: data.map((x) => { x.key = x.id; return x; }) });
+      } catch (e) {
+        console.error(e);
+      }
     }
 
-    saveTask = (task) => {
+    saveTask = async (task) => {
+      const dbTask = { ...task };
+      delete dbTask.key;
       if (this.state.taskId === null) {
-        fetch('https://x-check-json-server.herokuapp.com/tasks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(task),
-        })
-          .then((res) => res.json())
-          .then(() => {
-            // console.log('-->', result);
-            this.getTasks();
-          })
-          .catch((err) => console.log(err));
+        try {
+          const res = await fetch('https://x-check-json-server.herokuapp.com/tasks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dbTask),
+          });
+          const data = await res.json();
+          task.state = data.state;
+          task.id = data.id;
+          task.key = data.id;
+
+          this.setState({ data: [...this.state.data, task] });
+        } catch (e) {
+          console.log(e);
+        }
       } else {
-        fetch(`https://x-check-json-server.herokuapp.com/tasks/${this.state.taskId}`, {
-          method: 'PATCH',
+        const res = await fetch(`https://x-check-json-server.herokuapp.com/tasks/${this.state.taskId}`, {
+          method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(task),
-        })
-          .then((res) => res.json())
-          .then(() => {
-            // console.log('-->', result);
-            this.getTasks();
-          })
-          .catch((err) => console.log(err));
+          body: JSON.stringify(dbTask),
+        });
+        const data = await res.json();
+        const newTaskArr = this.state.data.filter((t) => t.id !== data.id);
+        task.id = data.id;
+        task.key = data.id;
+        newTaskArr.push(task);
+        newTaskArr.sort((a, b) => a.id - b.id);
+        this.setState({ data: [...newTaskArr] });
       }
     }
 
@@ -94,6 +99,7 @@ export default class EditCheckingList extends React.Component {
     }
 
     newTask = () => {
+      this.setState({ selectedRow: null });
       this.setState({
         markdown: '* **Категория1 +140**: \n'
                 + '  * Пункт1. +10 \n'
@@ -111,7 +117,8 @@ export default class EditCheckingList extends React.Component {
       let markdown = '';
 
       task.categoriesOrder.forEach((item) => {
-        markdown += `  * **${item}**:\n`;
+        const { categoryTitle } = task.items.find((x) => x.category === item);
+        markdown += `  * **${categoryTitle}**:\n`;
 
         task.items.forEach((it) => {
           const score = it.minScore === 0 ? `+${it.maxScore}` : `${it.minScore}`;
@@ -122,7 +129,8 @@ export default class EditCheckingList extends React.Component {
     }
 
     createTaskFromMarkdown = (markdown) => {
-      const arrCategories = markdown.match(/\*\s+\*\*.+\*\*/gm).map((item) => item.split('**')[1]);
+      const arrCategories = markdown.match(/\*\s+\*\*.+\*\*/gm).map((x, i) => `category${i}`);
+      const arrCategoriesTitle = markdown.match(/\*\s+\*\*.+\*\*/gm).map((item) => item.split('**')[1]);
       const arrItems = markdown.split(/\*\s+\*\*.+\*\*/);
       arrItems.splice(0, 1);
       const arrItemsSeparate = arrItems.map((item) => item.split('*'));
@@ -135,8 +143,9 @@ export default class EditCheckingList extends React.Component {
           ? 0 : +it.match(/[+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, '').replace('+', ''),
         minScore: it.match(/[+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, '').search(/-/) === -1
           ? 0 : +it.match(/[+\s*\n\-\d]*$/g)[0].replace(/^[\s*]/g, ''),
-        name: `${it.replace(/[+\s*\n\-\d]*$/, '').replace(/\.$/g, '')}-${number}${num}`,
+        name: `${arrCategories[number]}_p${num}`,
         category: arrCategories[number],
+        categoryTitle: arrCategoriesTitle[number],
         description: '',
       })));
 
@@ -152,34 +161,19 @@ export default class EditCheckingList extends React.Component {
       };
     }
 
-    // insertTask = (task) => {
-    //   const result = this.state.data;
-    //   if (this.state.numOfTask === 'new') {
-    //     result.push(task);
-    //     this.setState({ data: result });
-    //     return result;
-    //     // console.log('>>>>', result);
-    //   }
-    //   result[this.state.numOfTask] = task;
-    //   this.setState({ data: result });
-    //   // console.log('--->', result);
-    //   return result;
-    // }
-
-    generateView = () => {
-      const task = this.createTaskFromMarkdown(this.state.markdown);
+    generateView = (markdown, currentTask) => {
+      const task = this.createTaskFromMarkdown(markdown || this.state.markdown);
       const list = task.categoriesOrder.map((item, number) => (
-        <div>
-          <h4 key={item + number}>
-            {`● ${item}:`}
-          </h4>
+        <div className="task__view__item" key={item + number}>
+          <h3>
+            {`● ${task.items.find((x) => x.category === item).categoryTitle}:`}
+          </h3>
           {
                     task.items.map((it, num) => (
                       item === it.category
                         ? (
-                          <p key={it + num}>
+                          <p key={it + num} className="item__unit">
                             {`○ ${it.title}. ${it.maxScore === 0 ? `${it.minScore}` : `+${it.maxScore}`}`}
-                            :
                           </p>
                         ) : null
                     ))
@@ -188,105 +182,120 @@ export default class EditCheckingList extends React.Component {
       ));
 
       const view = (
-        <>
-          <h3 key="taskName">
-            Название таска:
-            {` ${this.state.valueTaskTitle}`}
-          </h3>
-          <h3 key="author">
-            Автор:
-            {` ${this.state.valueAuthor}`}
-          </h3>
+        <div className="task__view">
+          <div className="task__view__header">
+            <h3 key="taskName">
+              Task name:
+              {` ${markdown ? currentTask.name : this.state.valueTaskTitle}`}
+            </h3>
+            <h3 key="author">
+              Author:
+              {` ${markdown ? currentTask.userId : this.state.valueAuthor}`}
+            </h3>
+            <h3 key="score">
+              Max score:
+              {` ${task.items.reduce((a, c) => a + c.maxScore, 0)}`}
+            </h3>
+          </div>
           {list}
-        </>
+        </div>
       );
 
       this.setState({ view });
     }
 
-    render() {
-      // console.log(this.state.markdown);
-      const {
-        markdown, view, valueTaskTitle, valueAuthor, valueState, taskId, data,
-      } = this.state;
+    closeModal = () => {
+      this.setState({ isShowPreview: false });
+    }
 
-      const menu = (
-        <Menu>
-          <Menu.Item
-            key="danger"
-            danger
-          >
-            <span
-              key="dangerSpan"
-              onClick={() => this.newTask()}
-            >
-              Создать новый таск
-            </span>
-          </Menu.Item>
-          {
-                    data.map((item, number) => (
-                      <Menu.Item key={item + number}>
-                        <span
-                          key={`span${item}${number}`}
-                          onClick={() => this.editTask(item, number)}
-                        >
-                          {item.name}
-                        </span>
-                      </Menu.Item>
-                    ))
-                }
-        </Menu>
-      );
+    handleSubmit = (e) => {
+      e.preventDefault();
+      const task = this.createTaskFromMarkdown(this.state.markdown);
+      this.saveTask(task);
+      this.setState({
+        taskId: '',
+        valueTaskTitle: '',
+        valueAuthor: '',
+        valueState: '',
+        view: '',
+        markdown: '',
+      });
+    }
+
+    render() {
+      const {
+        markdown, view, valueTaskTitle, valueAuthor,
+        valueState, selectedRow, taskId, data, isShowPreview,
+      } = this.state;
 
       const options = ['DRAFT', 'PUBLISHED', 'ARCHIVED'];
 
       return (
+
         <div className="edit-task-wrapper">
-          <Dropdown overlay={menu}>
-            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-              Выбор таска
-              {' '}
-              <DownOutlined />
-            </a>
-          </Dropdown>
-          {(taskId === null || taskId.length !== 0)
+          <div className="tables__container">
+            <div className="tasks__header">
+              <h3>Tasks</h3>
+              <Button type="primary" onClick={() => this.newTask()}>Create new Task</Button>
+            </div>
+            <TableAnt
+              tableName="tasks"
+              datasource={data}
+              selectedRow={selectedRow}
+              previewClick={(id) => {
+                const task = data.find((t) => t.id === id);
+                if (task) {
+                  this.generateView(this.createMarkdown(task), task);
+                  this.setState({ isShowPreview: true });
+                }
+              }}
+              handleClick={(record) => {
+                this.setState({ selectedRow: record });
+                this.editTask(record);
+              }}
+            />
+          </div>
+          <div className="task__container">
+            {(taskId === null || taskId.length !== 0)
                 && (
-                <>
+                <form onSubmit={this.handleSubmit}>
                   <div>
-                    <p className="input-name">Состояние:</p>
+                    <p className="input-name">Status:</p>
                     <Radio.Group
                       options={options}
                       onChange={(e) => this.setState({ valueState: e.target.value })}
                       value={valueState}
                     />
                   </div>
-                  <p className="input-name">Название таска:</p>
-                  <TextArea
+                  <p className="input-name">Task name:</p>
+                  <Input
                     key="taskNameInput"
                     className="vvv"
-                    placeholder="Название таска"
-                    autoSize
+                    placeholder="Please write task name"
+                    required
                     value={valueTaskTitle}
                     onChange={(e) => {
                       this.setState({ valueTaskTitle: e.target.value });
                     }}
                   />
-                  <p className="input-name">Автор:</p>
-                  <TextArea
+                  <p className="input-name">Author:</p>
+                  <Input
                     key="authorNameInput"
                     className="vvv"
-                    placeholder="Автор"
-                    autoSize
+                    placeholder="Please write author"
+                    required
                     value={valueAuthor}
                     onChange={(e) => {
                       this.setState({ valueAuthor: e.target.value });
                     }}
                   />
-                  <p className="input-name">Окно редактирования:</p>
+                  <p className="input-name">Task editor:</p>
                   <TextArea
                     key="editInput"
+                    name="editInput"
                     className="vvv"
-                    placeholder="Редактирование"
+                    required
+                    placeholder={'Please write task description... \n Use next format: \n * **Category +100**: \n *Point +10 \n *Point +10'}
                     autoSize
                     value={markdown}
                     onChange={(e) => {
@@ -299,37 +308,24 @@ export default class EditCheckingList extends React.Component {
                     disabled={markdown.length === 0}
                     onClick={() => {
                       this.generateView();
+                      this.setState({ isShowPreview: true });
                     }}
                   >
-                    Показать результат
+                    Show preview
                   </Button>
                   <Button
                     key="save"
+                    type="primary"
                     className="edit-button"
-                    disabled={markdown.length === 0
-                            || valueTaskTitle.length === 0
-                            || valueAuthor.length === 0}
-                    onClick={() => {
-                      const task = this.createTaskFromMarkdown(markdown);
-                      // console.log('task-------', task);
-                      this.saveTask(task);
-                      this.setState({
-                        taskId: '',
-                        valueTaskTitle: '',
-                        valueAuthor: '',
-                        valueState: '',
-                        view: '',
-                        markdown: '',
-                      });
-                    }}
+                    disabled={selectedRow !== null && selectedRow.state !== 'DRAFT'}
+                    htmlType="submit"
                   >
-                    сохранить таск
+                    Save
                   </Button>
-                  <div className="view">
-                    {view}
-                  </div>
-                </>
+                </form>
                 )}
+          </div>
+          <ModalPreview isShowPreview={isShowPreview} view={view} closeModal={this.closeModal} />
         </div>
       );
     }

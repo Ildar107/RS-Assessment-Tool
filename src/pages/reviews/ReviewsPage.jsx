@@ -37,7 +37,7 @@ const ReviewsPage = () => {
         // найти все ревью для ревью реквеста
         x.requests.map((req) => {
           req.key = req.id;
-          req.reviews = reviews.filter((rev) => rev.reviewRequestId === req.id);
+          req.reviews = reviews.filter((rev) => rev.reviewRequestId === req.id && rev.state !== 'DRAFT');
           req.count = req.reviews.length;
           // средний балл
           if (req.reviews.length > 0) {
